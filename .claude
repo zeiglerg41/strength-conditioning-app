@@ -1,0 +1,71 @@
+# Claude Development Protocol
+## Strength & Conditioning Application
+
+## Core Principles
+1. **One Task at a Time**: Complete exactly one checkbox from the development documents before moving to the next
+2. **Follow Dependencies**: Never start a task until its dependencies are completed and verified
+3. **Validate Each Step**: Confirm each task is working before marking complete
+4. **Document Progress**: Update progress tracking documents as we complete tasks
+5. **Stay Focused**: Resist the urge to work on multiple tasks simultaneously
+
+## Current Development Phase
+**Phase**: Solo Development - Technical Foundation
+**Document**: `/development_progress/01-technical-setup.md`
+**Current Section**: Development Environment Setup
+**Next Task**: Code Editor Configuration - VS Code with React Native extensions
+
+## Version Compatibility Verified ✅
+- Node.js v22.16.0 ✅ (exceeds required 20+)
+- React Native CLI v20.0.1 ✅ (via npx)  
+- Expo CLI v0.24.20 ✅ (via npx)
+- Target: Expo SDK 53 + React Native 0.79 (2025 stable)
+
+## Task Completion Protocol
+For each task:
+1. **Identify**: Read the specific task from the development documents
+2. **Plan**: Understand what needs to be done and any prerequisites  
+3. **Execute**: Complete the task step by step
+4. **Verify**: Test that the task is working as expected
+5. **Document**: Mark the checkbox as complete in the appropriate document
+6. **Next**: Identify the next sequential task based on dependencies
+
+## Development Documents Reference
+- **Technical Setup**: `/development_progress/01-technical-setup.md`
+- **Solo Development Tasks**: `/development_progress/phase-1-solo-development.md`
+- **Requirements**: `/requirements/` directory for reference
+
+## Progress Tracking
+- Use checkboxes in development documents to track completion
+- Mark tasks as complete only after verification
+- Update this file with current phase/section/task
+- Document any deviations or issues encountered
+
+## Commands to Remember
+```bash
+# Check current directory
+pwd
+
+# Check Node.js version (after installation)
+node --version
+npm --version
+
+# Initialize React Native project (when ready)
+npx create-expo-app --template
+
+# Check git status
+git status
+```
+
+## Current Status
+- [ ] Technical Foundation: Development Environment Setup - In Progress
+- [ ] Core Features: Not Started
+- [ ] User Experience: Not Started  
+- [ ] Validation & Testing: Not Started
+
+## Next Immediate Task
+**Task**: Install Node.js (LTS version)
+**Document**: `01-technical-setup.md` - Development Environment Setup
+**Verification**: Run `node --version` and `npm --version` to confirm installation
+
+---
+*Updated: Starting development - Technical Foundation phase*
