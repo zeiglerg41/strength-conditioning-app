@@ -1,0 +1,25 @@
+{
+  "name": "strength-conditioning-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test-supabase-connection.js",
+  "scripts": {
+    "test": "node tests/test-supabase-connection.js",
+    "test:supabase": "node tests/test-supabase-connection.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeiglerg41/strength-conditioning-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zeiglerg41/strength-conditioning-app/issues"
+  },
+  "homepage": "https://github.com/zeiglerg41/strength-conditioning-app#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
+    "dotenv": "^17.2.1"
+  }
+}
