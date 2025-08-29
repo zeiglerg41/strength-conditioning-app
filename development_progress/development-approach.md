@@ -65,6 +65,23 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 ---
 
+## 🏗️ Technical Stack & Decisions
+
+### Core Stack
+- **Database**: Supabase (PostgreSQL + Auth + Realtime)
+- **Backend**: Supabase Edge Functions (Deno runtime)
+- **Frontend**: React Native + Expo SDK 53
+- **AI/LLM**: Model-agnostic (OpenAI/Anthropic/Ollama via env var)
+- **Version Control**: Git + GitHub
+
+### Key Architecture Decisions
+- **Development**: API-first → Backend → Frontend
+- **AI Integration**: Supabase Edge Functions with provider adapters
+- **Data Storage**: Full programs in DB, detailed workout logs with aggregation
+- **Auth**: Supabase Auth (built-in)
+
+---
+
 ## 🔄 Current Status
 
 **Active Document**: `01-api-design.md`  
