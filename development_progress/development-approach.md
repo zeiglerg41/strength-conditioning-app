@@ -31,16 +31,21 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - Integration: Supabase Edge Functions with provider adapters
 - Storage: Full programs in DB, detailed workout logs with aggregation
 
-### [01-api-design.md](./01-api-design.md) 🔄 **[CURRENT - IN PROGRESS]**
+### [01-api-design.md](./01-api-design.md) ✅ **[COMPLETE]**
 **API Contracts & Data Models**
-- [ ] Define all REST endpoints
-- [ ] Specify request/response schemas
-- [ ] Document authentication flow
-- [ ] Create data model specifications
-- [ ] Define error responses
+- [✅] Define all REST endpoints
+- [✅] Specify request/response schemas  
+- [✅] Document authentication flow
+- [✅] Create data model specifications
+- [✅] Define error responses
 
 **Decisions Made:**
-- (To be added as we complete API design)
+- **Program Structure**: Event-driven reverse periodization from target dates
+- **Exercise Selection**: Context-aware, no static library (equipment/injury/travel filtered)
+- **Deload Management**: Max 1 per 6 training days, literature-based education
+- **Analytics Framework**: Research-backed metrics (strength, power, endurance, load)
+- **Error Handling**: Comprehensive with actionable user suggestions
+- **Authentication**: JWT-based, provider-agnostic (works with Supabase Auth)
 
 ### [02-database-schema.md](./02-database-schema.md)
 **Database Design & Setup**
@@ -118,18 +123,18 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 ## 🔄 Current Status
 
-**Active Document**: `01-api-design.md`  
-**Phase**: API Design & Contracts  
-**Next Task**: Define all REST endpoints and data models
+**Active Document**: `02-database-schema.md`  
+**Phase**: Database Design & Implementation  
+**Next Task**: Create Supabase tables and relationships based on API contracts
 
 ---
 
 ## 📋 Development Phases
 
-### Phase 1: API Design ← **WE ARE HERE**
+### Phase 1: API Design ✅ **COMPLETE**
 Define all contracts before writing any code. This becomes our source of truth.
 
-### Phase 2: Database & Backend
+### Phase 2: Database & Backend ← **WE ARE HERE**
 Implement the APIs and data layer based on contracts.
 
 ### Phase 3: Frontend Development
