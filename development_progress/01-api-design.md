@@ -9,19 +9,25 @@
 ## 📋 API Design Checklist
 
 ### Authentication Endpoints
-- [ ] **POST /auth/signup** - User registration
-- [ ] **POST /auth/login** - User login  
-- [ ] **POST /auth/logout** - User logout
-- [ ] **POST /auth/refresh** - Refresh token
-- [ ] **POST /auth/forgot-password** - Password reset request
-- [ ] **POST /auth/reset-password** - Password reset confirmation
+- [✅] **POST /auth/signup** - User registration with email/password
+- [✅] **POST /auth/login** - User login returning JWT token
+- [✅] **POST /auth/logout** - User logout (invalidate token)
+- [✅] **POST /auth/refresh** - Refresh JWT token
+- [✅] **POST /auth/forgot-password** - Password reset request
+- [✅] **POST /auth/reset-password** - Password reset confirmation
 
 ### User Management
-- [ ] **GET /users/profile** - Get current user profile
-- [ ] **PUT /users/profile** - Update user profile
-- [ ] **POST /users/onboarding** - Complete onboarding
-- [ ] **PUT /users/constraints** - Update training constraints
-- [ ] **PUT /users/goals** - Update training goals
+- [✅] **GET /users/profile** - Get current user profile
+- [✅] **PUT /users/profile** - Update basic profile info
+- [✅] **POST /users/onboarding** - Complete initial onboarding wizard
+- [✅] **PUT /users/lifestyle** - Update lifestyle factors
+- [✅] **PUT /users/training-background** - Update training history
+- [✅] **PUT /users/equipment** - Update equipment access
+- [✅] **PUT /users/goals** - Update performance goals
+- [✅] **PUT /users/constraints** - Update training constraints
+- [✅] **POST /users/goals/generate-challenge** - AI-generate performance challenge
+- [✅] **PUT /users/injury** - Add/update injury information
+- [✅] **DELETE /users/injury/{id}** - Remove resolved injury
 
 ### Program Generation
 - [ ] **POST /programs/generate** - Generate new program
@@ -60,27 +66,107 @@
   "email": "string",
   "profile": {
     "name": "string",
-    "age": "number",
-    "height": "number",
-    "weight": "number",
-    "training_experience": "beginner|intermediate|advanced",
+    "date_of_birth": "date",
+    "gender": "male|female|other|prefer_not_to_say",
+    "height": "number", // cm
+    "weight": "number", // kg
+    "address": {
+      "city": "string",
+      "state": "string", 
+      "country": "string",
+      "timezone": "string"
+    },
     "created_at": "timestamp",
     "updated_at": "timestamp"
   },
+  "lifestyle": {
+    "employment_status": "full_time|part_time|student|unemployed|retired|self_employed",
+    "work_schedule": "standard|shift|irregular|remote",
+    "commute_distance": "number", // km one way
+    "commute_method": "car|public_transport|bike|walk|work_from_home",
+    "commute_duration_minutes": "number",
+    "travel_for_work": {
+      "frequency": "never|monthly|weekly|daily",
+      "typical_duration_days": "number",
+      "access_to_gym_while_traveling": "always|sometimes|never"
+    },
+    "daily_activity_level": "sedentary|lightly_active|moderately_active|very_active",
+    "sleep_schedule": {
+      "typical_bedtime": "string", // HH:MM
+      "typical_wake_time": "string", // HH:MM
+      "sleep_quality": "poor|fair|good|excellent"
+    }
+  },
+  "training_background": {
+    "training_age_years": "number",
+    "experience_level": "beginner|novice|intermediate|advanced|expert",
+    "previous_sports": ["string"],
+    "current_activity_types": ["resistance_training", "cardio", "sports"],
+    "injuries": [
+      {
+        "type": "string",
+        "affected_areas": ["string"],
+        "severity": "minor|moderate|major|chronic",
+        "date_occurred": "date",
+        "current_status": "healed|healing|ongoing|needs_modification"
+      }
+    ]
+  },
+  "equipment_access": {
+    "primary_location": "home|commercial_gym|university_gym|corporate_gym|outdoor",
+    "available_equipment": {
+      "barbells": "boolean",
+      "dumbbells": "boolean", 
+      "kettlebells": "boolean",
+      "resistance_bands": "boolean",
+      "pull_up_bar": "boolean",
+      "cardio_equipment": ["treadmill", "bike", "rower", "elliptical"],
+      "specialized": ["platform", "rack", "cables", "machines"]
+    },
+    "backup_locations": [
+      {
+        "type": "home|gym|outdoor|bodyweight",
+        "equipment": ["string"],
+        "access_frequency": "daily|weekly|occasional|emergency_only"
+      }
+    ]
+  },
+  "performance_goals": {
+    "primary_focus": "strength|power|endurance|general_fitness|sport_specific",
+    "target_events": [
+      {
+        "name": "string",
+        "date": "date",
+        "type": "powerlifting|marathon|triathlon|military_test|sport_season|general",
+        "specific_requirements": "string",
+        "priority": "primary|secondary|aspirational"
+      }
+    ],
+    "generated_challenges": [
+      {
+        "name": "string",
+        "type": "strength|endurance|power|mobility",
+        "target_date": "date",
+        "description": "string"
+      }
+    ],
+    "performance_metrics": {
+      "track_strength": "boolean",
+      "track_endurance": "boolean", 
+      "track_power": "boolean",
+      "track_mobility": "boolean",
+      "preferred_tests": ["string"] // "5k run", "max squat", etc
+    }
+  },
   "constraints": {
     "weekly_training_days": "number",
-    "session_duration_minutes": "number",
-    "equipment_access": ["barbell", "dumbbells", "kettlebells"],
-    "travel_frequency": "never|monthly|weekly",
-    "injuries": ["string"]
-  },
-  "goals": {
-    "primary_goal": "strength|endurance|general_fitness",
-    "target_event": {
-      "name": "string",
-      "date": "date",
-      "type": "marathon|powerlifting|general"
-    }
+    "preferred_session_duration_minutes": "number",
+    "max_session_duration_minutes": "number",
+    "preferred_training_times": ["morning", "lunch", "evening", "late_night"],
+    "training_day_preferences": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+    "absolute_rest_days": ["string"], // days that must be rest
+    "fatigue_sensitivity": "low|moderate|high",
+    "recovery_needs": "fast|average|slow"
   }
 }
 ```
@@ -147,9 +233,16 @@
 
 ### Registration Flow
 1. **POST /auth/signup** with email/password
-2. Receive confirmation email
-3. **POST /users/onboarding** with profile data
-4. **POST /programs/generate** to create first program
+2. Receive confirmation email and verify account
+3. **POST /users/onboarding** with comprehensive lifestyle assessment:
+   - Basic profile (name, DOB, location)
+   - Lifestyle factors (employment, commute, travel, sleep)
+   - Training background (experience, sports, injuries)
+   - Equipment access (primary/backup locations)
+   - Performance goals (events, focus areas, metrics)
+   - Training constraints (time, days, preferences)
+4. **POST /programs/generate** to create first personalized program
+5. **POST /users/goals/generate-challenge** if no specific events selected
 
 ### Login Flow
 1. **POST /auth/login** with credentials

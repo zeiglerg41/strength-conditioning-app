@@ -1,5 +1,15 @@
 # Development Approach Strategy
-## 🎯 Master Guide for S&C App Development
+## 🎯 Master Guide for S&C Program Generator Development
+
+### 🏆 App Vision: Performance-Focused Program Generation
+**The first S&C app that generates complete periodized training programs** (not just workouts) tailored to real-life constraints. Built on science-backed principles from Supertraining, Joel Jamieson's methods, and peer-reviewed periodization research.
+
+**Key Differentiators:**
+- **Program Generator**: Full periodized programs considering lifestyle, not random workouts
+- **Lifestyle Integration**: Commute, work travel, equipment access, employment status
+- **Performance Focus**: Trains for events/metrics, not aesthetics
+- **Science-Backed**: Linear/undulating periodization from leading S&C literature
+- **Universal**: Works for busy professionals to dedicated athletes
 
 ### ✅ Build Order: API-First → Backend → Frontend
 
@@ -15,6 +25,12 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [✅] AI integration architecture - Supabase Edge Functions
 - [✅] Data storage strategy - Full programs in DB, detailed logs with aggregation
 
+**Decisions Made:**
+- Database: Supabase (PostgreSQL + Auth + Realtime)
+- AI Provider: Model-agnostic (OpenAI/Anthropic/Ollama via env var)
+- Integration: Supabase Edge Functions with provider adapters
+- Storage: Full programs in DB, detailed workout logs with aggregation
+
 ### [01-api-design.md](./01-api-design.md) 🔄 **[CURRENT - IN PROGRESS]**
 **API Contracts & Data Models**
 - [ ] Define all REST endpoints
@@ -22,6 +38,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Document authentication flow
 - [ ] Create data model specifications
 - [ ] Define error responses
+
+**Decisions Made:**
+- (To be added as we complete API design)
 
 ### [02-database-schema.md](./02-database-schema.md)
 **Database Design & Setup**
@@ -31,6 +50,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Create indexes for performance
 - [ ] Set up database functions/triggers
 
+**Decisions Made:**
+- (To be added during database implementation)
+
 ### [03-backend-implementation.md](./03-backend-implementation.md)
 **Backend Services & Logic**
 - [ ] Implement authentication endpoints
@@ -38,6 +60,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Create workout tracking services
 - [ ] Set up AI integration
 - [ ] Implement analytics endpoints
+
+**Decisions Made:**
+- (To be added during backend implementation)
 
 ### [04-frontend-setup.md](./04-frontend-setup.md)
 **React Native Project Initialization**
@@ -47,6 +72,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Configure navigation
 - [ ] Set up development environment
 
+**Decisions Made:**
+- (To be added during frontend setup)
+
 ### [05-frontend-development.md](./05-frontend-development.md)
 **UI Implementation**
 - [ ] Build authentication screens
@@ -55,6 +83,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Build analytics dashboard
 - [ ] Polish UX and animations
 
+**Decisions Made:**
+- (To be added during frontend development)
+
 ### [06-testing-deployment.md](./06-testing-deployment.md)
 **Testing & Production**
 - [ ] Unit and integration tests
@@ -62,6 +93,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - [ ] Performance optimization
 - [ ] Deployment pipeline setup
 - [ ] Production monitoring
+
+**Decisions Made:**
+- (To be added during testing/deployment)
 
 ---
 
