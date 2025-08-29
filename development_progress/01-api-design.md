@@ -58,17 +58,28 @@
 - [✅] **POST /exercises/filter** - Filter exercises by equipment/constraints/preferences
 - [✅] **GET /exercises/categories** - Get exercise categories available to user
 
-### Analytics & Progress (Research-Based Metrics)
-- [✅] **GET /analytics/strength-progression** - 1RM estimates, volume trends, strength ratios
-- [✅] **GET /analytics/power-development** - Velocity metrics, power output, speed progression  
-- [✅] **GET /analytics/endurance-performance** - VO2 estimates, time trials, HR zones
-- [✅] **GET /analytics/training-load** - RPE trends, TRIMP, monotony/strain analysis
-- [✅] **GET /analytics/recovery-patterns** - Readiness trends, deload frequency, sleep impact
-- [✅] **GET /analytics/event-progress** - Progress toward target events/goals
-- [✅] **GET /analytics/personal-records** - PRs with context (equipment, phase, conditions)
-- [✅] **GET /analytics/adherence** - Training consistency, missed sessions analysis
+### Analytics & Progress (User Priority Hierarchy)
+
+#### Primary: Event Progress Dashboard
+- [✅] **GET /analytics/event-dashboard** - Main landing: event readiness, timeline, overall progress
+- [✅] **GET /analytics/event-readiness** - Readiness score breakdown by training system
+- [✅] **GET /analytics/phase-completion** - Current phase progress, upcoming milestones
+
+#### Secondary: Training System Performance  
+- [✅] **GET /analytics/strength-systems** - Overall strength progression, stalling detection
+- [✅] **GET /analytics/power-speed-systems** - Power/speed development across energy systems
+- [✅] **GET /analytics/endurance-systems** - Cardiovascular fitness, energy system development
+- [✅] **GET /analytics/recovery-readiness** - Recovery patterns, training adaptation
+
+#### Tertiary: Exercise-Specific Drill-Down
+- [✅] **GET /analytics/strength-exercise/{exercise_id}** - Specific lift progression (bench, squat, etc.)
+- [✅] **GET /analytics/energy-system-exercise/{exercise_id}** - Specific energy system work progressions
 - [✅] **POST /analytics/performance-test** - Log performance test results
-- [✅] **GET /analytics/dashboard** - Personalized metrics overview based on user goals
+- [✅] **GET /analytics/heart-rate-trends/{exercise_id}** - HR at prescribed intensities over time
+
+#### Supporting Analytics
+- [✅] **GET /analytics/training-load** - RPE trends, volume/intensity balance
+- [✅] **GET /analytics/adherence** - Training consistency, missed sessions analysis
 
 ---
 
@@ -405,6 +416,150 @@
     "trackable_variables": ["weight", "reps", "time", "distance"],
     "rpe_applicable": "boolean",
     "percentage_based": "boolean" // Can use %1RM
+  }
+}
+```
+
+### Analytics Response Models (User Priority Examples)
+
+#### Primary: Event Dashboard Response
+```json
+{
+  "event_progress": {
+    "event": {
+      "name": "Powerlifting Meet",
+      "date": "2024-04-15",
+      "days_remaining": 42,
+      "type": "strength_test"
+    },
+    "overall_readiness": {
+      "score": 78, // 0-100
+      "trend": "improving|stalling|declining",
+      "confidence": "high|medium|low"
+    },
+    "system_breakdown": {
+      "strength": {
+        "score": 82,
+        "trend": "improving",
+        "status": "on_track|ahead|behind|stalling"
+      },
+      "power": {
+        "score": 75, 
+        "trend": "improving",
+        "status": "on_track"
+      },
+      "endurance": {
+        "score": 65,
+        "trend": "stalling", 
+        "status": "behind",
+        "concern_level": "medium"
+      },
+      "recovery": {
+        "score": 80,
+        "trend": "stable",
+        "status": "on_track"
+      }
+    },
+    "phase_status": {
+      "current_phase": "build",
+      "week_in_phase": 3,
+      "total_weeks_in_phase": 4,
+      "completion_percentage": 75,
+      "next_phase": "peak",
+      "upcoming_tests": ["1RM squat assessment", "speed benchmark"]
+    },
+    "alerts": [
+      {
+        "type": "stalling|concern|milestone",
+        "system": "endurance",
+        "message": "Cardiovascular progression has stalled - consider aerobic base work",
+        "action": "Review endurance training frequency"
+      }
+    ]
+  }
+}
+```
+
+#### Secondary: System Performance Response  
+```json
+{
+  "strength_systems": {
+    "overall_trend": "linear_progression|stalling|plateauing|declining", 
+    "progression_rate": "faster_than_expected|on_track|slower_than_expected",
+    "key_lifts": [
+      {
+        "exercise": "Back Squat",
+        "current_1rm_estimate": 140,
+        "baseline_1rm": 125,
+        "improvement_percentage": 12,
+        "trend_over_4_weeks": "linear_improvement",
+        "projected_event_performance": 145,
+        "target_event_performance": 150,
+        "status": "slightly_behind"
+      }
+    ]
+  },
+  "power_speed_systems": {
+    "energy_system_breakdown": {
+      "pcr_system": { // 0-10 seconds
+        "current_performance": "improving",
+        "trend": "linear",
+        "key_exercises": ["40m sprint", "broad jump"]
+      },
+      "glycolytic_system": { // 10 seconds - 2 minutes  
+        "current_performance": "stalling",
+        "trend": "plateau",
+        "key_exercises": ["400m sprint", "2-min bike test"],
+        "concern": "plateau_detected_needs_variation"
+      }
+    }
+  },
+  "endurance_systems": {
+    "aerobic_base": {
+      "vo2_max_estimate": 45,
+      "baseline": 42,
+      "improvement_percentage": 7.1,
+      "trend": "slow_improvement"
+    },
+    "heart_rate_efficiency": {
+      "zone_2_efficiency": "improving", // HR lower for same pace
+      "zone_4_power": "stalling"
+    }
+  }
+}
+```
+
+#### Tertiary: Exercise-Specific Drill-Down
+```json
+{
+  "strength_exercise": {
+    "exercise_name": "Bench Press",
+    "progression_data": {
+      "timeline": [
+        {"date": "2024-01-01", "estimated_1rm": 95, "volume": 2850},
+        {"date": "2024-02-01", "estimated_1rm": 102, "volume": 3250}
+      ],
+      "trend_analysis": {
+        "progression_type": "linear|plateau|decline",
+        "rate_per_week": 0.75, // kg per week
+        "projected_event_1rm": 115,
+        "stall_detection": false
+      }
+    }
+  },
+  "energy_system_exercise": {
+    "exercise_name": "400m Sprint",
+    "energy_system": "glycolytic", // 90-120 seconds
+    "progression_data": {
+      "timeline": [
+        {"date": "2024-01-01", "time": 72.5, "avg_hr": 185, "recovery_hr_60s": 140},
+        {"date": "2024-02-01", "time": 71.2, "avg_hr": 175, "recovery_hr_60s": 125}
+      ],
+      "heart_rate_efficiency": {
+        "hr_at_prescribed_intensity": "decreasing", // good - more efficient
+        "recovery_rate": "improving"
+      }
+    }
   }
 }
 ```

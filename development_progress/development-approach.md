@@ -43,7 +43,8 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - **Program Structure**: Event-driven reverse periodization from target dates
 - **Exercise Selection**: Context-aware, no static library (equipment/injury/travel filtered)
 - **Deload Management**: Max 1 per 6 training days, literature-based education
-- **Analytics Framework**: Research-backed metrics (strength, power, endurance, load)
+- **Analytics Hierarchy**: User-priority flow - Event progress → System performance → Exercise-specific
+- **Performance Tracking**: Stalling detection, energy system breakdown, HR efficiency trends
 - **Error Handling**: Comprehensive with actionable user suggestions
 - **Authentication**: JWT-based, provider-agnostic (works with Supabase Auth)
 
