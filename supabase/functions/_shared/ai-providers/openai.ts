@@ -77,7 +77,8 @@ The program must be scientifically sound, realistic given their constraints, and
       return this.validateProgramStructure(programData, userProfile.id);
     } catch (error) {
       console.error('OpenAI program generation error:', error);
-      throw new Error(`Failed to generate program: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate program: ${message}`);
     }
   }
 
@@ -127,7 +128,8 @@ Make it exciting but realistic given their experience level and constraints.`;
       return JSON.parse(data.choices[0].message.content);
     } catch (error) {
       console.error('OpenAI challenge generation error:', error);
-      throw new Error(`Failed to generate challenge: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate challenge: ${message}`);
     }
   }
 
@@ -182,7 +184,8 @@ Maintain training stimulus while adapting to constraints.`;
       return { ...workout, ...adaptedWorkout };
     } catch (error) {
       console.error('OpenAI workout adaptation error:', error);
-      throw new Error(`Failed to adapt workout: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to adapt workout: ${message}`);
     }
   }
 
@@ -237,7 +240,8 @@ Base recommendations on current literature (Izquierdo, Helms, etc.).`;
       return result.deload_options || [];
     } catch (error) {
       console.error('OpenAI deload generation error:', error);
-      throw new Error(`Failed to generate deload options: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate deload options: ${message}`);
     }
   }
 
@@ -293,7 +297,8 @@ Provide actionable insights and recommendations.`;
       return JSON.parse(data.choices[0].message.content);
     } catch (error) {
       console.error('OpenAI performance analysis error:', error);
-      throw new Error(`Failed to analyze performance: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to analyze performance: ${message}`);
     }
   }
 

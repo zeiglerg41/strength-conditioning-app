@@ -82,7 +82,8 @@ Respond with valid JSON only.`;
       return this.validateProgramStructure(programData, userProfile.id);
     } catch (error) {
       console.error('Ollama program generation error:', error);
-      throw new Error(`Failed to generate program: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate program: ${message}`);
     }
   }
 
@@ -136,7 +137,8 @@ Respond with valid JSON only.`;
       return JSON.parse(data.message.content);
     } catch (error) {
       console.error('Ollama challenge generation error:', error);
-      throw new Error(`Failed to generate challenge: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate challenge: ${message}`);
     }
   }
 
@@ -195,7 +197,8 @@ Respond with valid JSON only.`;
       return { ...workout, ...adaptedWorkout };
     } catch (error) {
       console.error('Ollama workout adaptation error:', error);
-      throw new Error(`Failed to adapt workout: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to adapt workout: ${message}`);
     }
   }
 
@@ -254,7 +257,8 @@ Respond with valid JSON only.`;
       return result.deload_options || [];
     } catch (error) {
       console.error('Ollama deload generation error:', error);
-      throw new Error(`Failed to generate deload options: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to generate deload options: ${message}`);
     }
   }
 
@@ -314,7 +318,8 @@ Respond with valid JSON only.`;
       return JSON.parse(data.message.content);
     } catch (error) {
       console.error('Ollama performance analysis error:', error);
-      throw new Error(`Failed to analyze performance: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to analyze performance: ${message}`);
     }
   }
 
