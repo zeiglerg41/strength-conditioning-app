@@ -66,26 +66,26 @@
 - [x] **GET /workouts/upcoming** - Preview next 7 days
 
 ### Context-Aware Exercise Selection
-- [ ] **GET /exercises/available** - Get exercises for current user context
-- [ ] **GET /exercises/{id}** - Get specific exercise details
-- [ ] **GET /exercises/substitutes/{id}** - Get alternatives for current context
-- [ ] **POST /exercises/filter** - Filter exercises by equipment/constraints/preferences
-- [ ] **GET /exercises/categories** - Get exercise categories available to user
+- [x] **GET /exercises/available** - Get exercises for current user context
+- [x] **GET /exercises/{id}** - Get specific exercise details
+- [x] **GET /exercises/substitutes/{id}** - Get alternatives for current context
+- [x] **POST /exercises/filter** - Filter exercises by equipment/constraints/preferences
+- [x] **GET /exercises/categories** - Get exercise categories available to user
 
 ### Analytics & Progress (User Priority Hierarchy)
-- [ ] **GET /analytics/event-dashboard** - Main landing: event readiness, timeline, overall progress
-- [ ] **GET /analytics/event-readiness** - Readiness score breakdown by training system
-- [ ] **GET /analytics/phase-completion** - Current phase progress, upcoming milestones
-- [ ] **GET /analytics/strength-systems** - Overall strength progression, stalling detection
-- [ ] **GET /analytics/power-speed-systems** - Power/speed development across energy systems
-- [ ] **GET /analytics/endurance-systems** - Cardiovascular fitness, energy system development
-- [ ] **GET /analytics/recovery-readiness** - Recovery patterns, training adaptation
-- [ ] **GET /analytics/strength-exercise/{exercise_id}** - Specific lift progression
-- [ ] **GET /analytics/energy-system-exercise/{exercise_id}** - Specific energy system work progressions
-- [ ] **POST /analytics/performance-test** - Log performance test results
-- [ ] **GET /analytics/heart-rate-trends/{exercise_id}** - HR at prescribed intensities over time
-- [ ] **GET /analytics/training-load** - RPE trends, volume/intensity balance
-- [ ] **GET /analytics/adherence** - Training consistency, missed sessions analysis
+- [x] **GET /analytics/event-dashboard** - Main landing: event readiness, timeline, overall progress
+- [x] **GET /analytics/event-readiness** - Readiness score breakdown by training system
+- [x] **GET /analytics/phase-completion** - Current phase progress, upcoming milestones
+- [x] **GET /analytics/strength-systems** - Overall strength progression, stalling detection
+- [x] **GET /analytics/power-speed-systems** - Power/speed development across energy systems
+- [x] **GET /analytics/endurance-systems** - Cardiovascular fitness, energy system development
+- [x] **GET /analytics/recovery-readiness** - Recovery patterns, training adaptation
+- [x] **GET /analytics/strength-exercise/{exercise_id}** - Specific lift progression
+- [x] **GET /analytics/energy-system-exercise/{exercise_id}** - Specific energy system work progressions
+- [x] **POST /analytics/performance-test** - Log performance test results
+- [x] **GET /analytics/heart-rate-trends/{exercise_id}** - HR at prescribed intensities over time
+- [x] **GET /analytics/training-load** - RPE trends, volume/intensity balance
+- [x] **GET /analytics/adherence** - Training consistency, missed sessions analysis
 
 ### Error Handling & Validation
 - [ ] Implement comprehensive error response format
