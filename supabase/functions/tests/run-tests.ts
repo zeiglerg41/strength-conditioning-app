@@ -39,6 +39,21 @@ const testCategories = [
     name: "AI Provider Adapters",
     file: "ai-providers-test.ts", 
     description: "AI provider factory and adapter pattern"
+  },
+  {
+    name: "Exercise Selection",
+    file: "exercises-test.ts",
+    description: "Context-aware exercise generation and filtering"
+  },
+  {
+    name: "Analytics Hierarchy",
+    file: "analytics-test.ts",
+    description: "Event → System → Exercise analytics calculations"
+  },
+  {
+    name: "Programs & Workouts",
+    file: "programs-workouts-test.ts",
+    description: "Program generation and workout management logic"
   }
 ];
 
