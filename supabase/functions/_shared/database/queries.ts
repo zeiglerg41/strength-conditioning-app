@@ -148,6 +148,68 @@ export class ProgramQueries {
       throw new DatabaseError('create program', error.message);
     }
   }
+  
+  static async updateProgram(programId: string, updates: Partial<Program>): Promise<Program> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('programs')
+        .update(updates)
+        .eq('id', programId)
+        .select()
+        .single();
+      
+      if (error) {
+        throw new DatabaseError('update program', error.message);
+      }
+      
+      return data;
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('update program', error.message);
+    }
+  }
+  
+  static async deleteProgram(programId: string): Promise<void> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { error } = await supabase
+        .from('programs')
+        .delete()
+        .eq('id', programId);
+      
+      if (error) {
+        throw new DatabaseError('delete program', error.message);
+      }
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('delete program', error.message);
+    }
+  }
+  
+  static async getUserProfile(userId: string): Promise<UserProfile | null> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') return null; // No rows found
+        throw new DatabaseError('fetch user profile', error.message);
+      }
+      
+      return data;
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('fetch user profile', error.message);
+    }
+  }
 }
 
 export class WorkoutQueries {
@@ -229,6 +291,58 @@ export class WorkoutQueries {
       throw new DatabaseError('update workout', error.message);
     }
   }
+  
+  static async getWorkoutById(workoutId: string, userId: string): Promise<Workout | null> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('workouts')
+        .select(`
+          *,
+          programs!inner(user_id)
+        `)
+        .eq('id', workoutId)
+        .eq('programs.user_id', userId)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') return null;
+        throw new DatabaseError('fetch workout', error.message);
+      }
+      
+      return data;
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('fetch workout', error.message);
+    }
+  }
+  
+  static async logExercisePerformance(workoutId: string, exerciseData: any): Promise<void> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { error } = await supabase
+        .from('exercise_instances')
+        .insert({
+          workout_id: workoutId,
+          exercise_id: exerciseData.exercise_id,
+          sets_completed: exerciseData.sets_completed,
+          reps_completed: exerciseData.reps_completed,
+          weights_used: exerciseData.weights_used,
+          rpe_scores: exerciseData.rpe_scores,
+          notes: exerciseData.notes,
+          completed_at: new Date().toISOString()
+        });
+      
+      if (error) {
+        throw new DatabaseError('log exercise performance', error.message);
+      }
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('log exercise performance', error.message);
+    }
+  }
 }
 
 export class DeloadQueries {
@@ -270,6 +384,36 @@ export class DeloadQueries {
     } catch (error) {
       if (error instanceof DatabaseError) throw error;
       throw new DatabaseError('record deload', error.message);
+    }
+  }
+  
+  static async getDeloadEligibility(userId: string): Promise<any> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('check_deload_eligibility', { p_user_id: userId });
+      
+      if (error) {
+        throw new DatabaseError('check deload eligibility', error.message);
+      }
+      
+      return data || {
+        can_deload: false,
+        days_since_last_deload: 0,
+        min_days_between_deloads: 3,
+        deloads_in_last_6_training_days: 0,
+        max_deloads_per_6_training_days: 1,
+        reason_blocked: 'No data available',
+        educational_message: {
+          title: null,
+          message: null,
+          recommendations: []
+        }
+      };
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('check deload eligibility', error.message);
     }
   }
 }
@@ -319,6 +463,27 @@ export class ContextQueries {
     } catch (error) {
       if (error instanceof DatabaseError) throw error;
       throw new DatabaseError('create context period', error.message);
+    }
+  }
+  
+  static async endContextPeriod(contextPeriodId: string): Promise<void> {
+    const supabase = createSupabaseClient();
+    
+    try {
+      const { error } = await supabase
+        .from('context_periods')
+        .update({ 
+          status: 'completed',
+          end_date: new Date().toISOString()
+        })
+        .eq('id', contextPeriodId);
+      
+      if (error) {
+        throw new DatabaseError('end context period', error.message);
+      }
+    } catch (error) {
+      if (error instanceof DatabaseError) throw error;
+      throw new DatabaseError('end context period', error.message);
     }
   }
 }

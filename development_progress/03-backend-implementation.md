@@ -44,26 +44,26 @@
 - [x] Error handling and fallback logic
 
 ### Program Generation (Event-Driven)
-- [ ] **POST /programs/generate** - Generate program for specific event/timeline
-- [ ] **GET /programs/current** - Get active program overview
-- [ ] **GET /programs/{id}** - Get specific program details
-- [ ] **PUT /programs/{id}/regenerate** - Regenerate program (life changes)
-- [ ] **DELETE /programs/{id}** - Delete program
-- [ ] **POST /programs/{id}/extend** - Extend timeline (event date changed)
-- [ ] **PUT /programs/{id}/context** - Update context (travel, equipment change)
+- [x] **POST /programs/generate** - Generate program for specific event/timeline
+- [x] **GET /programs/current** - Get active program overview
+- [x] **GET /programs/{id}** - Get specific program details
+- [x] **PUT /programs/{id}/regenerate** - Regenerate program (life changes)
+- [x] **DELETE /programs/{id}** - Delete program
+- [x] **POST /programs/{id}/extend** - Extend timeline (event date changed)
+- [x] **PUT /programs/{id}/context** - Update context (travel, equipment change)
 
 ### Daily Workout & Adaptations
-- [ ] **GET /workouts/today** - Get today's workout with current context
-- [ ] **GET /workouts/{id}** - Get specific workout details
-- [ ] **POST /workouts/today/deload-options** - Get 1-2 deload options (if eligible)
-- [ ] **PUT /workouts/today/apply-deload** - Apply volume or intensity deload
-- [ ] **GET /workouts/deload-eligibility** - Check if user can deload today
-- [ ] **POST /workouts/{id}/start** - Start workout session
-- [ ] **PUT /workouts/{id}/log** - Log exercise data (sets/reps/RPE)
-- [ ] **POST /workouts/{id}/complete** - Complete workout
-- [ ] **PUT /workouts/{id}/modify** - Manual workout modification
-- [ ] **POST /workouts/travel-mode** - Toggle travel mode (bodyweight/hotel gym)
-- [ ] **GET /workouts/upcoming** - Preview next 7 days
+- [x] **GET /workouts/today** - Get today's workout with current context
+- [x] **GET /workouts/{id}** - Get specific workout details
+- [x] **POST /workouts/today/deload-options** - Get 1-2 deload options (if eligible)
+- [x] **PUT /workouts/today/apply-deload** - Apply volume or intensity deload
+- [x] **GET /workouts/deload-eligibility** - Check if user can deload today
+- [x] **POST /workouts/{id}/start** - Start workout session
+- [x] **PUT /workouts/{id}/log** - Log exercise data (sets/reps/RPE)
+- [x] **POST /workouts/{id}/complete** - Complete workout
+- [x] **PUT /workouts/{id}/modify** - Manual workout modification
+- [x] **POST /workouts/travel-mode** - Toggle travel mode (bodyweight/hotel gym)
+- [x] **GET /workouts/upcoming** - Preview next 7 days
 
 ### Context-Aware Exercise Selection
 - [ ] **GET /exercises/available** - Get exercises for current user context
