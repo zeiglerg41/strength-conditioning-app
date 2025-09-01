@@ -22,10 +22,12 @@
 - [x] **POST /auth/forgot-password** - Password reset request
 - [x] **POST /auth/reset-password** - Password reset confirmation
 
-### User Management Endpoints
-- [x] **GET /users/profile** - Get current user profile
+### Enhanced User Management & Profiling (From v2)
+- [x] **GET /users/profile** - Get current user profile with completion status
 - [x] **PUT /users/profile** - Update basic profile info
-- [x] **POST /users/onboarding** - Complete initial onboarding wizard
+- [x] **GET /users/profile/completion** - Get onboarding progress and next steps
+- [x] **PUT /users/profile/step** - Complete specific onboarding step
+- [x] **POST /users/onboarding/complete** - Finalize onboarding process
 - [x] **PUT /users/lifestyle** - Update lifestyle factors
 - [x] **PUT /users/training-background** - Update training history
 - [x] **PUT /users/equipment** - Update equipment access
@@ -34,6 +36,43 @@
 - [x] **POST /users/goals/generate-challenge** - AI-generate performance challenge
 - [x] **PUT /users/injury** - Add/update injury information
 - [x] **DELETE /users/injury/{id}** - Remove resolved injury
+
+#### Enhanced User Profiling Endpoints (v2)
+- [ ] **GET /users/training-background** - Get detailed training history
+- [ ] **PUT /users/training-background** - Update training experience
+- [ ] **GET /users/movement-competencies** - Get movement pattern assessments
+- [ ] **PUT /users/movement-competencies/{pattern}** - Update specific movement competency
+- [ ] **POST /users/movement-competencies/assess** - Complete movement assessment wizard
+- [ ] **GET /users/physical-profile** - Get injuries, limitations, exclusions
+- [ ] **PUT /users/physical-profile** - Update physical assessment
+- [ ] **GET /users/exercise-exclusions** - Get "will never do" exercise list
+- [ ] **POST /users/exercise-exclusions** - Add exercise exclusion
+- [ ] **PUT /users/exercise-exclusions/{id}** - Update exclusion reason/alternative
+- [ ] **DELETE /users/exercise-exclusions/{id}** - Remove exclusion
+- [ ] **POST /users/injuries** - Log new injury
+- [ ] **PUT /users/injuries/{id}** - Update injury status
+- [ ] **DELETE /users/injuries/{id}** - Remove resolved injury
+
+#### Equipment & Gym Ecosystem Management (v2)
+- [ ] **GET /users/equipment-access** - Get complete gym access network
+- [ ] **PUT /users/equipment-access** - Update equipment preferences
+- [ ] **GET /users/gyms** - Get user's gym network with equipment details
+- [ ] **POST /users/gyms** - Add gym to user's network
+- [ ] **PUT /users/gyms/{id}** - Update gym access details (frequency, priority)
+- [ ] **DELETE /users/gyms/{id}** - Remove gym from network
+- [ ] **GET /users/available-movements** - Get movement patterns available across all gyms
+- [ ] **POST /users/goals/events** - Add new target event
+- [ ] **PUT /users/goals/events/{id}** - Update target event details
+- [ ] **DELETE /users/goals/events/{id}** - Remove target event
+
+### Equipment & Gym Database Management (v2)
+- [ ] **GET /equipment-categories** - Get all equipment types with movement patterns
+- [ ] **GET /equipment-categories/{id}** - Get specific equipment details
+- [ ] **GET /gyms/search** - Search gyms by location/name
+- [ ] **GET /gyms/{id}** - Get specific gym details and equipment
+- [ ] **POST /gyms** - Create new gym entry (user-contributed)
+- [ ] **PUT /gyms/{id}/equipment** - Update gym equipment availability
+- [ ] **GET /gyms/{id}/users** - Get user community at gym (privacy-respecting)
 
 ### AI Provider Integration
 - [x] Create AI provider adapter pattern (OpenAI/Anthropic/Ollama)
@@ -105,7 +144,7 @@
 
 ## 🏗️ Edge Functions Architecture
 
-### Project Structure
+### Enhanced Project Structure (v2)
 ```
 supabase/functions/
 ├── _shared/
@@ -116,27 +155,51 @@ supabase/functions/
 │   │   └── adapter.ts
 │   ├── database/
 │   │   ├── queries.ts
+│   │   ├── user-queries.ts        # Enhanced user profiling queries
+│   │   ├── gym-queries.ts         # Equipment & gym management
+│   │   ├── program-queries.ts     # Program generation & regeneration
 │   │   └── types.ts
 │   ├── utils/
 │   │   ├── validation.ts
 │   │   ├── errors.ts
-│   │   └── auth.ts
+│   │   ├── auth.ts
+│   │   ├── profile-completion.ts  # Progressive onboarding logic
+│   │   └── movement-assessment.ts # Movement competency calculations
 │   └── types/
-│       └── api.ts
+│       ├── api.ts
+│       ├── user-profile.ts        # Enhanced user data models
+│       ├── equipment.ts           # Equipment & gym types
+│       └── analytics.ts           # Analytics response types
 ├── auth/
 │   └── index.ts
 ├── users/
-│   └── index.ts
+│   ├── index.ts                   # Basic user management
+│   ├── profiling.ts               # Enhanced profiling endpoints
+│   ├── movement-competencies.ts   # Movement assessment
+│   ├── exercise-exclusions.ts     # Exercise exclusion management
+│   ├── injuries.ts                # Injury tracking
+│   └── gym-access.ts              # Gym network management
+├── equipment/
+│   ├── index.ts                   # Equipment categories
+│   └── gyms.ts                    # Gym database management
 ├── programs/
-│   └── index.ts
+│   ├── index.ts                   # Program CRUD
+│   ├── generation.ts              # AI program generation
+│   └── regeneration.ts            # Dynamic regeneration logic
 ├── workouts/
-│   └── index.ts
+│   ├── index.ts                   # Workout management
+│   ├── deload-logic.ts            # Literature-based deload enforcement
+│   └── travel-mode.ts             # Context switching logic
 ├── exercises/
-│   └── index.ts
+│   ├── index.ts                   # Exercise selection
+│   └── context-filtering.ts       # Equipment-aware filtering
 ├── analytics/
-│   └── index.ts
+│   ├── index.ts                   # Analytics hierarchy
+│   ├── event-dashboard.ts         # Primary analytics
+│   ├── system-performance.ts      # Secondary analytics
+│   └── exercise-specific.ts       # Tertiary analytics
 └── context-periods/
-    └── index.ts
+    └── index.ts                   # Travel & temporary context
 ```
 
 ### AI Provider Adapter Pattern
@@ -172,40 +235,95 @@ Using Supabase Auth (decided in 00-essential-decisions.md):
 - Use Supabase client with Row Level Security
 - All queries automatically filtered by `auth.uid()`
 - JSONB columns for flexible user data storage
+- Enhanced schema v2 with equipment categories, gyms, and user gym access tables
+- Profile completion tracking with database functions
+- Literature-based deload frequency enforcement via database functions
+
+### Enhanced Business Logic (v2)
+
+#### Progressive Profile Completion
+```typescript
+// _shared/utils/profile-completion.ts
+interface ProfileCompletionService {
+  calculateCompletion(userId: string): Promise<number>;
+  getNextSteps(userId: string): Promise<OnboardingStep[]>;
+  markStepComplete(userId: string, step: string): Promise<void>;
+}
+```
+
+#### Movement Competency Assessment
+```typescript
+// _shared/utils/movement-assessment.ts
+interface MovementAssessment {
+  assessPattern(pattern: MovementPattern, userInput: CompetencyData): CompetencyLevel;
+  validateWorkingWeight(pattern: MovementPattern, weight: number, experience: string): boolean;
+  suggestProgressions(currentLevel: CompetencyLevel): Exercise[];
+}
+```
+
+#### Equipment Context Management
+```typescript
+// _shared/database/gym-queries.ts
+interface GymContextService {
+  getUserAvailableEquipment(userId: string): Promise<EquipmentCategory[]>;
+  getMovementPatternsAvailable(userId: string): Promise<MovementPattern[]>;
+  checkEquipmentAvailability(gymId: string, equipmentIds: string[]): Promise<boolean>;
+  getContextForDate(userId: string, date: Date): Promise<WorkoutContext>;
+}
+```
+
+#### Dynamic Program Regeneration
+```typescript
+// programs/regeneration.ts  
+interface ProgramRegenerationService {
+  shouldRegenerate(trigger: RegenerationTrigger): Promise<boolean>;
+  regenerateFromTrigger(programId: string, trigger: RegenerationTrigger): Promise<Program>;
+  calculateTimelineAdjustment(missedDays: number, eventDate: Date): Promise<TimelineAdjustment>;
+  bridgeProgramForTravel(travelContext: TravelContext): Promise<Program>;
+}
+```
 
 ---
 
-## 🎯 Implementation Priorities
+## 🎯 Enhanced Implementation Priorities (v2)
 
-### Phase 1: Core Infrastructure (Week 1)
-1. Set up Edge Functions development environment
-2. Create shared utilities (auth, validation, errors)
+### Phase 1: Core Infrastructure & Enhanced User Profiling (Week 1-2)
+1. Set up Edge Functions development environment with v2 project structure
+2. Create shared utilities (auth, validation, errors, profile completion)
 3. Implement AI provider adapter pattern
-4. Build basic authentication endpoints
+4. Build authentication endpoints
+5. **NEW**: Implement progressive profile completion system
+6. **NEW**: Build movement competency assessment logic
+7. **NEW**: Create equipment & gym database management
 
-### Phase 2: User Management (Week 2)  
-1. Complete user profile CRUD operations
-2. Implement onboarding wizard endpoint
-3. Build AI challenge generation
-4. Add context periods management
+### Phase 2: Enhanced User Management & Onboarding (Week 3)
+1. Complete enhanced user profile CRUD operations
+2. Implement multi-step onboarding wizard with completion tracking
+3. Build exercise exclusion management system
+4. **NEW**: Create gym network management endpoints
+5. **NEW**: Implement movement pattern availability checking
+6. Build AI challenge generation with enhanced context
 
-### Phase 3: Program Generation (Week 3)
-1. Implement core program generation logic
-2. Add event-driven reverse periodization
-3. Build program modification endpoints
-4. Create workout adaptation logic
+### Phase 3: Program Generation & Dynamic Regeneration (Week 4)
+1. Implement core program generation logic with enhanced user context
+2. Add event-driven reverse periodization with equipment awareness
+3. **NEW**: Build dynamic program regeneration system for travel/life changes
+4. **NEW**: Implement travel mode with full program regeneration (not just substitution)
+5. Create workout adaptation logic with movement pattern focus
 
-### Phase 4: Daily Operations (Week 4)
-1. Build workout management endpoints
-2. Implement deload logic with database validation
-3. Add exercise selection with context filtering
-4. Create travel mode functionality
+### Phase 4: Daily Operations & Context Management (Week 5)
+1. Build workout management endpoints with sequential day enforcement
+2. Implement literature-based deload logic with database validation
+3. Add context-aware exercise selection with equipment filtering
+4. **NEW**: Create travel mode functionality with equipment context switching
+5. **NEW**: Implement skip day recovery and timeline adjustment logic
 
-### Phase 5: Analytics & Polish (Week 5)
-1. Implement analytics hierarchy endpoints
-2. Build performance tracking logic
-3. Add comprehensive error handling
-4. Complete testing and optimization
+### Phase 5: Analytics Hierarchy & Advanced Features (Week 6)
+1. Implement comprehensive analytics hierarchy (Event → System → Exercise)
+2. Build performance tracking with event readiness calculations
+3. **NEW**: Create dynamic test scheduling with automatic program extension
+4. Add comprehensive error handling with v2 error specifications
+5. Complete testing and optimization for all v2 features
 
 ---
 
@@ -242,21 +360,31 @@ supabase test functions
 
 ---
 
-## ✅ Success Criteria
+## ✅ Enhanced Success Criteria (v2)
 
 ### Functional Requirements
-- All API endpoints from 01-api-design.md implemented and working
+- All API endpoints from 01-api-design-v2.md implemented and working
+- Enhanced user profiling system with movement competency assessment
+- Progressive profile completion tracking with smart recommendations
+- Equipment & gym ecosystem management with movement pattern focus
 - AI provider switching works seamlessly via environment variable
-- Database queries respect Row Level Security policies
-- Deload frequency enforcement working as designed
-- Context-aware exercise selection filters correctly
+- Database queries respect Row Level Security policies for all v2 tables
+- Literature-based deload frequency enforcement working as designed
+- Context-aware exercise selection filters by available equipment
+- **NEW**: Dynamic program regeneration for travel/life changes working correctly
+- **NEW**: Multi-gym access network management functional
+- **NEW**: Exercise exclusion system prevents unwanted exercise recommendations
+- **NEW**: Sequential day completion enforcement maintains program integrity
 
-### Non-Functional Requirements
-- Program generation completes within 30 seconds
-- Analytics queries return within 2 seconds
+### Enhanced Non-Functional Requirements
+- Program generation completes within 30 seconds (enhanced context processing)
+- Program regeneration completes within 45 seconds (more complex than generation)
+- Analytics queries return within 2 seconds (all three hierarchy levels)
+- Profile completion calculation executes within 1 second
+- Movement pattern availability lookup completes within 500ms
 - 99.9% uptime for critical user operations
-- Comprehensive error handling with actionable messages
-- All endpoints return consistent response formats
+- Comprehensive error handling with actionable messages (v2 error specifications)
+- All endpoints return consistent response formats with enhanced data models
 
 ### Quality Gates
 - 90%+ code coverage with unit tests

@@ -5,11 +5,14 @@
 **The first S&C app that generates complete periodized training programs** (not just workouts) tailored to real-life constraints. Built on science-backed principles from Supertraining, Joel Jamieson's methods, and peer-reviewed periodization research.
 
 **Key Differentiators:**
-- **Program Generator**: Full periodized programs considering lifestyle, not random workouts
-- **Lifestyle Integration**: Commute, work travel, equipment access, employment status
-- **Performance Focus**: Trains for events/metrics, not aesthetics
-- **Science-Backed**: Linear/undulating periodization from leading S&C literature
-- **Universal**: Works for busy professionals to dedicated athletes
+- **Dynamic Program Generation**: Full periodized programs that adapt to real life - missed days, travel, equipment changes trigger intelligent program regeneration
+- **Calendar-Based Workout Interface**: Multi-scale calendar view (day/week/month) where the calendar IS the workout management system
+- **Sequential Completion Enforcement**: Users must complete prescribed days before accessing future workouts, maintaining program integrity
+- **Event-Driven Periodization**: Programs reverse-engineered from target events with dynamic test scheduling and timeline adjustments
+- **Context-Aware Equipment Management**: Multi-gym access networks with travel mode that regenerates entire programs, not just exercise substitutions
+- **Lifestyle Integration**: Deep profiling including commute, work travel, family constraints, recovery factors
+- **Performance Focus**: Trains for events/metrics with sophisticated analytics hierarchy, not aesthetics
+- **Science-Backed**: Linear/undulating periodization from leading S&C literature with dynamic adaptation algorithms
 
 ### ✅ Build Order: API-First → Backend → Frontend
 
@@ -96,16 +99,41 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - **Performance Focus**: Lightweight bundle (<60KB), selective re-rendering
 - **Development Velocity**: Stack optimized for primary developer's expertise
 
-### [05-frontend-development.md](./05-frontend-development.md)
-**UI Implementation**
-- [ ] Build authentication screens
-- [ ] Create workout tracking interface
-- [ ] Implement program display
-- [ ] Build analytics dashboard
-- [ ] Polish UX and animations
+### [05-frontend-development.md](./05-frontend-development.md) 🔄 **[IN PROGRESS]**
+**Enhanced UI Implementation with Dynamic Programming Interface**
+
+#### Core Page Structure & Navigation Flow:
+- **📊 Dashboard (Landing Page)**: Event countdown, today's workout card (clickable → day view), program progress metrics, quick access to travel mode toggle
+- **📅 Calendar/Workout (Primary Interface)**: Multi-scale calendar system where calendar IS the workout management
+  - **Day View** (Default): Today's editable workout with set/rep logging, RPE input, exercise substitution, deload toggle
+  - **Week View**: Context view with navigation to specific days, progress indicators
+  - **Month View**: High-level program timeline with phases, test days, travel periods marked
+- **🏗️ Program Management**: Program overview, edit mode for timeline/goals, travel period management, regeneration options
+- **📈 Analytics**: Event progress dashboard → training system performance → exercise-specific metrics
+- **👤 Profile**: Enhanced user profiling with movement competency tracking, equipment access management
+
+#### Dynamic Programming Features:
+- **Sequential Day Completion**: Users can only edit current/past days, future days view-only until prerequisites completed
+- **Skip Day Handling**: Notifications to move skipped workouts to current day, maintains program integrity
+- **Travel Mode Integration**: Full program regeneration (not substitution) when equipment/timeline changes
+- **Dynamic Test Scheduling**: AI-scheduled test days with automatic program extension for missed tests
+- **Context-Aware Navigation**: Day→Week→Month views maintain user's viewing context
+
+**Implementation Tasks:**
+- [ ] Build enhanced onboarding flow (6-step progressive profiling)
+- [ ] Create calendar-based workout interface (day/week/month views)
+- [ ] Implement dashboard with clickable workout card navigation
+- [ ] Build program management page with edit/regeneration capabilities
+- [ ] Develop travel mode system with equipment context switching
+- [ ] Create analytics hierarchy (event → system → exercise levels)
+- [ ] Implement sequential completion enforcement logic
 
 **Decisions Made:**
-- (To be added during frontend development)
+- **Primary Interface**: Calendar-based workout system (not separate workout pages)
+- **Navigation Flow**: Dashboard card → Calendar day view → Week/Month context switching
+- **Dynamic Programming**: Full program regeneration for travel/equipment changes vs simple substitution
+- **Completion Logic**: Sequential day enforcement with skip day recovery prompts
+- **Context Persistence**: Calendar navigation maintains user's current viewing context
 
 ### [06-testing-deployment.md](./06-testing-deployment.md)
 **Testing & Production**
@@ -141,9 +169,15 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 ## 🔄 Current Status
 
-**Active Document**: `05-frontend-development.md`  
-**Phase**: Frontend UI Implementation  
-**Next Task**: Create Expo project and begin implementing authentication screens
+**Active Document**: `03-backend-implementation.md`  
+**Phase**: Backend Implementation - Edge Functions Development  
+**Current Focus**: Implementing Edge Functions for enhanced v2 API endpoints after database migration  
+**Just Completed**: ✅ V2 comprehensive database schema migration with core workout tracking tables  
+**Next Tasks**: 
+- Implement core Edge Functions starting with user management endpoints
+- Build AI provider integration with model-agnostic adapter pattern
+- Create program generation and regeneration logic
+- Test each endpoint implementation before proceeding
 
 ---
 
@@ -152,11 +186,12 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 ### Phase 1: API Design ✅ **COMPLETE**
 Define all contracts before writing any code. This becomes our source of truth.
 
-### Phase 2: Database & Backend ✅ **COMPLETE**
-Implement the APIs and data layer based on contracts.
+### Phase 2: Database & Backend 🔄 **IN PROGRESS** ← **WE ARE HERE**
+**Database Schema**: ✅ Complete - V2 comprehensive schema with core workout tracking tables applied  
+**Edge Functions**: 🔄 In Progress - Implementing API endpoints based on v2 contracts  
 
-### Phase 3: Frontend Development ← **WE ARE HERE**
-Build UI that consumes the established APIs.
+### Phase 3: Frontend Development ⏳ **PENDING**
+Build UI that consumes the established APIs (after backend completion).
 
 ### Phase 4: Testing & Deployment
 Ensure quality and deploy to production.
