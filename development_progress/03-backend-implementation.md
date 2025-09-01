@@ -6,6 +6,45 @@
 
 ---
 
+## 🏗️ Architecture Decision: Consolidated User Management
+
+### Decision Summary
+**All user-related endpoints are consolidated into a single `/users` Edge Function**, following Supabase best practices for "fat functions" and 2025 REST API design patterns.
+
+### Rationale
+1. **Follows Supabase Official Recommendation**: "Develop 'fat functions' - prefer fewer, larger functions over many small ones" for better performance and reduced cold starts
+2. **Aligns with Original API Design**: Our v2 API design already specified all endpoints under `/users/*` paths
+3. **Consistent REST Patterns**: Creates logical resource hierarchy under single domain
+4. **Performance Benefits**: Single function deployment, shared authentication/validation, faster routing
+5. **Maintainability**: Centralized user-related logic, easier to modify and extend
+
+### Implementation Pattern
+```typescript
+// Single /users Edge Function handles all routes:
+// /users/profile
+// /users/training-background  
+// /users/movement-competencies
+// /users/physical-profile
+// /users/exercise-exclusions
+// /users/injuries
+// ... etc
+
+// Route internally based on URL segments:
+const pathSegments = url.pathname.split('/').filter(Boolean)
+if (pathSegments.includes('training-background')) {
+  return handleTrainingBackground(userService, userId, method, req)
+}
+```
+
+### Migration from Separate Functions
+- ✅ Created separate functions initially for domain separation (good for development)
+- ✅ Consolidated into single function following research and best practices
+- ✅ Maintained all business logic and validation
+- ✅ Updated all tests to use `/users/*` paths
+- ✅ Removed redundant separate Edge Functions
+
+---
+
 ## 📋 Backend Implementation Checklist
 
 ### Environment & Setup
@@ -37,21 +76,23 @@
 - [x] **PUT /users/injury** - Add/update injury information
 - [x] **DELETE /users/injury/{id}** - Remove resolved injury
 
-#### Enhanced User Profiling Endpoints (v2)
-- [ ] **GET /users/training-background** - Get detailed training history
-- [ ] **PUT /users/training-background** - Update training experience
-- [ ] **GET /users/movement-competencies** - Get movement pattern assessments
-- [ ] **PUT /users/movement-competencies/{pattern}** - Update specific movement competency
-- [ ] **POST /users/movement-competencies/assess** - Complete movement assessment wizard
-- [ ] **GET /users/physical-profile** - Get injuries, limitations, exclusions
-- [ ] **PUT /users/physical-profile** - Update physical assessment
-- [ ] **GET /users/exercise-exclusions** - Get "will never do" exercise list
-- [ ] **POST /users/exercise-exclusions** - Add exercise exclusion
-- [ ] **PUT /users/exercise-exclusions/{id}** - Update exclusion reason/alternative
-- [ ] **DELETE /users/exercise-exclusions/{id}** - Remove exclusion
-- [ ] **POST /users/injuries** - Log new injury
-- [ ] **PUT /users/injuries/{id}** - Update injury status
-- [ ] **DELETE /users/injuries/{id}** - Remove resolved injury
+#### Enhanced User Profiling Endpoints (v2) - Consolidated into /users Edge Function
+**Implementation Strategy**: Following Supabase best practices for "fat functions", all enhanced user profiling endpoints are consolidated into the single `/users` Edge Function for better performance, maintainability, and consistent routing.
+
+- [x] **GET /users/training-background** - Get detailed training history (consolidated into /users function)
+- [x] **PUT /users/training-background** - Update training experience (consolidated into /users function)
+- [x] **GET /users/movement-competencies** - Get movement pattern assessments (consolidated into /users function)
+- [x] **PUT /users/movement-competencies/{pattern}** - Update specific movement competency (consolidated into /users function)
+- [x] **POST /users/movement-competencies/assess** - Complete movement assessment wizard (consolidated into /users function)
+- [x] **GET /users/physical-profile** - Get injuries, limitations, exclusions (consolidated into /users function)
+- [x] **PUT /users/physical-profile** - Update physical assessment (consolidated into /users function)
+- [x] **GET /users/exercise-exclusions** - Get "will never do" exercise list (consolidated into /users function)
+- [x] **POST /users/exercise-exclusions** - Add exercise exclusion (consolidated into /users function)
+- [x] **PUT /users/exercise-exclusions/{id}** - Update exclusion reason/alternative (consolidated into /users function)
+- [x] **DELETE /users/exercise-exclusions/{id}** - Remove exclusion (consolidated into /users function)
+- [x] **POST /users/injuries** - Log new injury (consolidated into /users function)
+- [x] **PUT /users/injuries/{id}** - Update injury status (consolidated into /users function)
+- [x] **DELETE /users/injuries/{id}** - Remove resolved injury (consolidated into /users function)
 
 #### Equipment & Gym Ecosystem Management (v2)
 - [ ] **GET /users/equipment-access** - Get complete gym access network
