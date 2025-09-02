@@ -124,3 +124,11 @@ export function validatePaginationParams(page?: number, limit?: number): { page:
   
   return { page: validatedPage, limit: validatedLimit };
 }
+
+export function validateRequired(data: any, fields: string[]): void {
+  for (const field of fields) {
+    if (!data[field]) {
+      throw new ValidationError(`${field} is required`, field, 'REQUIRED_FIELD');
+    }
+  }
+}

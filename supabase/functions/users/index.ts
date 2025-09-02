@@ -6,6 +6,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
 import { corsHeaders } from '../_shared/cors.ts'
 import { UserProfileService } from '../_shared/database/user-queries.ts'
 import { ProfileUpdateRequest, TrainingBackground, PhysicalProfile, MovementCompetency } from '../_shared/types/user-profile.ts'
+import { handleEquipmentAccess, handleUserGyms, handleAvailableMovements, handleGoalEvents } from './user-gym-handlers.ts'
+import { createErrorResponse, createSuccessResponse, ValidationError, NotFoundError, AuthenticationError } from '../_shared/utils/errors.ts'
+import { validateRequired, validateEmail } from '../_shared/utils/validation.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
@@ -72,6 +75,18 @@ serve(async (req: Request) => {
     }
     if (route.startsWith('injuries')) {
       return await handleInjuries(userService, userId, method, req, url, pathSegments)
+    }
+    if (route === 'equipment-access') {
+      return await handleEquipmentAccess(userService, userId, method, req)
+    }
+    if (route.startsWith('gyms')) {
+      return await handleUserGyms(userService, userId, method, req, pathSegments)
+    }
+    if (route === 'available-movements') {
+      return await handleAvailableMovements(userService, userId, method, req)
+    }
+    if (route.startsWith('goals/events')) {
+      return await handleGoalEvents(userService, userId, method, req, pathSegments)
     }
     
     // Default fallback - return basic profile for GET /users

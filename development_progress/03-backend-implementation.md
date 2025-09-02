@@ -94,26 +94,17 @@ if (pathSegments.includes('training-background')) {
 - [x] **PUT /users/injuries/{id}** - Update injury status (consolidated into /users function)
 - [x] **DELETE /users/injuries/{id}** - Remove resolved injury (consolidated into /users function)
 
-#### Equipment & Gym Ecosystem Management (v2)
-- [ ] **GET /users/equipment-access** - Get complete gym access network
-- [ ] **PUT /users/equipment-access** - Update equipment preferences
-- [ ] **GET /users/gyms** - Get user's gym network with equipment details
-- [ ] **POST /users/gyms** - Add gym to user's network
-- [ ] **PUT /users/gyms/{id}** - Update gym access details (frequency, priority)
-- [ ] **DELETE /users/gyms/{id}** - Remove gym from network
-- [ ] **GET /users/available-movements** - Get movement patterns available across all gyms
-- [ ] **POST /users/goals/events** - Add new target event
-- [ ] **PUT /users/goals/events/{id}** - Update target event details
-- [ ] **DELETE /users/goals/events/{id}** - Remove target event
 
-### Equipment & Gym Database Management (v2)
-- [ ] **GET /equipment-categories** - Get all equipment types with movement patterns
-- [ ] **GET /equipment-categories/{id}** - Get specific equipment details
-- [ ] **GET /gyms/search** - Search gyms by location/name
-- [ ] **GET /gyms/{id}** - Get specific gym details and equipment
-- [ ] **POST /gyms** - Create new gym entry (user-contributed)
-- [ ] **PUT /gyms/{id}/equipment** - Update gym equipment availability
-- [ ] **GET /gyms/{id}/users** - Get user community at gym (privacy-respecting)
+### Equipment & Gym Database Management (v2) - Consolidated into /equipment function
+**Implementation Strategy**: Global equipment categories and gym database management consolidated into single `/equipment` Edge Function.
+
+- [x] **GET /equipment-categories** - Get all equipment types with movement patterns (consolidated into /equipment function)
+- [x] **GET /equipment-categories/{id}** - Get specific equipment details (consolidated into /equipment function)
+- [x] **GET /gyms/search** - Search gyms by location/name (consolidated into /equipment function)
+- [x] **GET /gyms/{id}** - Get specific gym details and equipment (consolidated into /equipment function)
+- [x] **POST /gyms** - Create new gym entry (user-contributed) (consolidated into /equipment function)
+- [x] **PUT /gyms/{id}/equipment** - Update gym equipment availability (consolidated into /equipment function)
+- [x] **GET /gyms/{id}/users** - Get user community at gym (consolidated into /equipment function)
 
 ### AI Provider Integration
 - [x] Create AI provider adapter pattern (OpenAI/Anthropic/Ollama)
@@ -168,9 +159,9 @@ if (pathSegments.includes('training-background')) {
 - [x] **GET /analytics/adherence** - Training consistency, missed sessions analysis
 
 ### Error Handling & Validation
-- [ ] Implement comprehensive error response format
-- [ ] Add input validation for all endpoints
-- [ ] Create business logic validation (deload frequency, etc.)
+- [x] Implement comprehensive error response format
+- [x] Add input validation for all endpoints
+- [x] Create business logic validation (deload frequency, etc.)
 - [ ] Add AI service error handling and retries
 - [ ] Implement rate limiting protection
 
