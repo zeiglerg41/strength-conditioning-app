@@ -5,9 +5,10 @@
 **The first S&C app that generates complete periodized training programs** (not just workouts) tailored to real-life constraints. Built on science-backed principles from Supertraining, Joel Jamieson's methods, and peer-reviewed periodization research.
 
 **Key Differentiators:**
-- **Dynamic Program Generation**: Full periodized programs that adapt to real life - missed days, travel, equipment changes trigger intelligent program regeneration
+- **Dynamic Program Generation**: Full periodized programs that adapt to real life - workouts shift forward when skipped (no missed days), travel/equipment changes trigger intelligent program regeneration
 - **Calendar-Based Workout Interface**: Multi-scale calendar view (day/week/month) where the calendar IS the workout management system
 - **Sequential Completion Enforcement**: Users must complete prescribed days before accessing future workouts, maintaining program integrity
+- **Simple Performance Tracking**: Basic performance feedback via modal notifications - target achievement rates, workout postponement frequency, intensity adherence
 - **Event-Driven Periodization**: Programs reverse-engineered from target events with dynamic test scheduling and timeline adjustments
 - **Context-Aware Equipment Management**: Multi-gym access networks with travel mode that regenerates entire programs, not just exercise substitutions
 - **Lifestyle Integration**: Deep profiling including commute, work travel, family constraints, recovery factors
@@ -68,14 +69,16 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - **Deload Enforcement**: Database triggers enforce 1 deload per 6 training days rule
 - **Security**: Row Level Security ensures users only access own data
 
-### [03-backend-implementation.md](./03-backend-implementation.md) ✅ **[COMPLETE]**
+### [03-backend-implementation.md](./03-backend-implementation.md) 🔄 **[IN PROGRESS]**
 **Backend Services & Logic**
 - [✅] Implement authentication endpoints
-- [✅] Build program generation logic
-- [✅] Create workout tracking services
-- [✅] Set up AI integration
-- [✅] Implement analytics endpoints
-- [✅] Create comprehensive test suite
+- [✅] Enhanced user profiling system (14+ endpoints consolidated)
+- [✅] Equipment & gym database management
+- [✅] Set up AI integration (model-agnostic architecture)
+- [✅] Error handling and validation infrastructure
+- [⏳] Program generation logic (TBD after AI provider validation)
+- [⏳] Workout tracking services (TBD after program generation)
+- [⏳] Analytics endpoints (TBD after core functionality)
 
 **Decisions Made:**
 - **AI Provider Architecture**: Model-agnostic factory pattern (OpenAI/Anthropic/Ollama)
@@ -83,6 +86,9 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 - **Analytics Hierarchy**: User-priority flow - Event dashboard → System performance → Exercise-specific metrics
 - **Edge Functions**: 50+ endpoints implemented across Programs, Workouts, Exercises, Analytics
 - **Testing Strategy**: Unit tests with Deno test framework, comprehensive coverage for all business logic
+- **Program Generation Architecture**: Structured Edge Functions with S&C knowledge base integration (Supertraining principles, Joel Jamieson periodization) embedded as prompt templates, user constraints from database as AI guardrails
+- **Training Age Classification**: NSCA research-backed 5-factor model determining effective vs chronological training age for accurate blueprint selection (TrainingAgeService with detraining impact calculations)
+- **AI Guardrail System**: System context injection pattern ensuring every AI call receives appropriate S&C blueprint + user constraints via ProgramContextService, prevents unsafe/inappropriate program generation
 
 ### [04-frontend-setup.md](./04-frontend-setup.md) ✅ **[COMPLETE]**
 **React Native Project Initialization**
@@ -114,10 +120,20 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 #### Dynamic Programming Features:
 - **Sequential Day Completion**: Users can only edit current/past days, future days view-only until prerequisites completed
-- **Skip Day Handling**: Notifications to move skipped workouts to current day, maintains program integrity
+- **Skip Day Handling**: Workouts automatically shift forward when skipped (no missed days in system), modal warnings after multiple postponements
 - **Travel Mode Integration**: Full program regeneration (not substitution) when equipment/timeline changes
 - **Dynamic Test Scheduling**: AI-scheduled test days with automatic program extension for missed tests
 - **Context-Aware Navigation**: Day→Week→Month views maintain user's viewing context
+
+#### Simple Performance Tracking:
+- **No Missed Days**: Skipped workouts automatically move to next available day (program shifts forward)
+- **Basic Performance Metrics**: Target achievement rate, workout postponement frequency, intensity adherence
+- **Modal Feedback System**: Simple notifications about performance patterns:
+  - "You've postponed 3 workouts this week - consider adjusting your schedule"
+  - "Great job hitting 9/10 target intensities!"
+  - "You're consistently missing target reps - should we adjust the program?"
+- **Performance Data Sources**: User profile (self-reported experience) + logged workout data (weights, sets, reps completed vs prescribed)
+- **Evaluation Triggers**: After X completed workouts, model evaluates basic performance and shows feedback modal
 
 **Implementation Tasks:**
 - [ ] Build enhanced onboarding flow (6-step progressive profiling)
@@ -170,14 +186,14 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 ## 🔄 Current Status
 
 **Active Document**: `03-backend-implementation.md`  
-**Phase**: Backend Implementation - Edge Functions Development  
-**Current Focus**: Implementing Edge Functions for enhanced v2 API endpoints after database migration  
-**Just Completed**: ✅ V2 comprehensive database schema migration with core workout tracking tables  
+**Phase**: Backend Implementation - Core Functionality Development  
+**Current Focus**: Implementing program generation logic with AI provider testing following fat functions architecture
+**Just Completed**: ✅ Enhanced user profiling system (14+ endpoints), equipment management, error handling infrastructure
 **Next Tasks**: 
-- Implement core Edge Functions starting with user management endpoints
-- Build AI provider integration with model-agnostic adapter pattern
-- Create program generation and regeneration logic
-- Test each endpoint implementation before proceeding
+- Test AI provider integration for program generation workflow
+- Implement `/programs` Edge Function with dynamic program regeneration
+- Build workout tracking with sequential completion enforcement
+- Validate program generation performance before analytics implementation
 
 ---
 
@@ -188,7 +204,7 @@ Define all contracts before writing any code. This becomes our source of truth.
 
 ### Phase 2: Database & Backend 🔄 **IN PROGRESS** ← **WE ARE HERE**
 **Database Schema**: ✅ Complete - V2 comprehensive schema with core workout tracking tables applied  
-**Edge Functions**: 🔄 In Progress - Implementing API endpoints based on v2 contracts  
+**Edge Functions**: 🔄 In Progress - Core infrastructure complete (users, equipment, error handling), program generation TBD  
 
 ### Phase 3: Frontend Development ⏳ **PENDING**
 Build UI that consumes the established APIs (after backend completion).

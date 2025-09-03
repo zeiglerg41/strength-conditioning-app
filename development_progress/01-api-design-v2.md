@@ -6,6 +6,19 @@
 
 ---
 
+## ⚠️ IMPORTANT: Implementation Status Reality Check
+
+**Most endpoints marked as "✅ complete" are actually just routing shells with no verified functionality.**
+
+### Actual Implementation Status:
+- **Authentication**: Handled by Supabase Auth (not custom endpoints)
+- **User Endpoints**: Basic routing exists, some logic implemented, NOT tested
+- **Program Generation**: AI integration exists but not fully tested
+- **Other Endpoints**: Mostly just routing shells, no verified implementation
+- **Testing**: Almost nothing has been properly tested end-to-end
+
+---
+
 ## 🎯 Key Enhancements from v1
 
 ### What We're Adding:
@@ -25,122 +38,130 @@
 
 ## 📋 API Design Checklist
 
+### Status Legend:
+- [ ] Not implemented
+- [🔗] Routing exists (URL handling only)
+- [⚙️] Logic implemented (actual functionality)
+- [✅] Tested & verified working
+- [🏗️] Partially implemented
+- [🚫] Won't implement (handled elsewhere)
+
 ### Authentication Endpoints
-- [✅] **POST /auth/signup** - User registration with email/password
-- [✅] **POST /auth/login** - User login returning JWT token
-- [✅] **POST /auth/logout** - User logout (invalidate token)
-- [✅] **POST /auth/refresh** - Refresh JWT token
-- [✅] **POST /auth/forgot-password** - Password reset request
-- [✅] **POST /auth/reset-password** - Password reset confirmation
+- [🚫] **POST /auth/signup** - User registration with email/password (Handled by Supabase Auth)
+- [🚫] **POST /auth/login** - User login returning JWT token (Handled by Supabase Auth)
+- [🚫] **POST /auth/logout** - User logout (invalidate token) (Handled by Supabase Auth)
+- [🚫] **POST /auth/refresh** - Refresh JWT token (Handled by Supabase Auth)
+- [🚫] **POST /auth/forgot-password** - Password reset request (Handled by Supabase Auth)
+- [🚫] **POST /auth/reset-password** - Password reset confirmation (Handled by Supabase Auth)
 
 ### Enhanced User Management & Profiling
-- [✅] **GET /users/profile** - Get current user profile with completion status
-- [✅] **PUT /users/profile** - Update basic profile info
-- [✅] **GET /users/profile/completion** - Get onboarding progress and next steps
-- [✅] **PUT /users/profile/step** - Complete specific onboarding step
-- [✅] **POST /users/onboarding/complete** - Finalize onboarding process
+- [⚙️] **GET /users/profile** - Get current user profile with completion status
+- [⚙️] **PUT /users/profile** - Update basic profile info
+- [⚙️] **GET /users/profile/completion** - Get onboarding progress and next steps
+- [⚙️] **PUT /users/profile/step** - Complete specific onboarding step
+- [⚙️] **POST /users/onboarding/complete** - Finalize onboarding process
 
 #### Training Background & Competencies
-- [✅] **GET /users/training-background** - Get detailed training history
-- [✅] **PUT /users/training-background** - Update training experience
-- [✅] **GET /users/movement-competencies** - Get movement pattern assessments
-- [✅] **PUT /users/movement-competencies/{pattern}** - Update specific movement competency
-- [✅] **POST /users/movement-competencies/assess** - Complete movement assessment wizard
+- [⚙️] **GET /users/training-background** - Get detailed training history
+- [⚙️] **PUT /users/training-background** - Update training experience
+- [⚙️] **GET /users/movement-competencies** - Get movement pattern assessments
+- [⚙️] **PUT /users/movement-competencies/{pattern}** - Update specific movement competency
+- [⚙️] **POST /users/movement-competencies/assess** - Complete movement assessment wizard
 
 #### Physical Profile & Limitations
-- [✅] **GET /users/physical-profile** - Get injuries, limitations, exclusions
-- [✅] **PUT /users/physical-profile** - Update physical assessment
-- [✅] **GET /users/exercise-exclusions** - Get "will never do" exercise list
-- [✅] **POST /users/exercise-exclusions** - Add exercise exclusion
-- [✅] **PUT /users/exercise-exclusions/{id}** - Update exclusion reason/alternative
-- [✅] **DELETE /users/exercise-exclusions/{id}** - Remove exclusion
-- [✅] **POST /users/injuries** - Log new injury
-- [✅] **PUT /users/injuries/{id}** - Update injury status
-- [✅] **DELETE /users/injuries/{id}** - Remove resolved injury
+- [⚙️] **GET /users/physical-profile** - Get injuries, limitations, exclusions
+- [⚙️] **PUT /users/physical-profile** - Update physical assessment
+- [⚙️] **GET /users/exercise-exclusions** - Get "will never do" exercise list
+- [⚙️] **POST /users/exercise-exclusions** - Add exercise exclusion
+- [⚙️] **PUT /users/exercise-exclusions/{id}** - Update exclusion reason/alternative
+- [⚙️] **DELETE /users/exercise-exclusions/{id}** - Remove exclusion
+- [⚙️] **POST /users/injuries** - Log new injury
+- [⚙️] **PUT /users/injuries/{id}** - Update injury status
+- [⚙️] **DELETE /users/injuries/{id}** - Remove resolved injury
 
 #### Equipment & Gym Ecosystem
-- [✅] **GET /users/equipment-access** - Get complete gym access network
-- [✅] **PUT /users/equipment-access** - Update equipment preferences
-- [✅] **GET /users/gyms** - Get user's gym network with equipment details
-- [✅] **POST /users/gyms** - Add gym to user's network
-- [✅] **PUT /users/gyms/{id}** - Update gym access details (frequency, priority)
-- [✅] **DELETE /users/gyms/{id}** - Remove gym from network
-- [✅] **GET /users/available-movements** - Get movement patterns available across all gyms
+- [🔗] **GET /users/equipment-access** - Get complete gym access network
+- [🔗] **PUT /users/equipment-access** - Update equipment preferences
+- [🔗] **GET /users/gyms** - Get user's gym network with equipment details
+- [🔗] **POST /users/gyms** - Add gym to user's network
+- [🔗] **PUT /users/gyms/{id}** - Update gym access details (frequency, priority)
+- [🔗] **DELETE /users/gyms/{id}** - Remove gym from network
+- [🔗] **GET /users/available-movements** - Get movement patterns available across all gyms
 
 #### Goals & Events (Event-Driven Core)
-- [✅] **GET /users/goals** - Get performance goals and target events
-- [✅] **PUT /users/goals** - Update goals and events
-- [✅] **POST /users/goals/events** - Add new target event
-- [✅] **PUT /users/goals/events/{id}** - Update target event details
-- [✅] **DELETE /users/goals/events/{id}** - Remove target event
-- [✅] **POST /users/goals/generate-challenge** - AI-generate performance challenge
+- [🔗] **GET /users/goals** - Get performance goals and target events
+- [🔗] **PUT /users/goals** - Update goals and events
+- [🔗] **POST /users/goals/events** - Add new target event
+- [🔗] **PUT /users/goals/events/{id}** - Update target event details
+- [🔗] **DELETE /users/goals/events/{id}** - Remove target event
+- [🔗] **POST /users/goals/generate-challenge** - AI-generate performance challenge
 
 #### Lifestyle & Constraints
-- [✅] **GET /users/lifestyle** - Get lifestyle factors and constraints
-- [✅] **PUT /users/lifestyle** - Update lifestyle information
-- [✅] **PUT /users/constraints** - Update training constraints
+- [🔗] **GET /users/lifestyle** - Get lifestyle factors and constraints
+- [🔗] **PUT /users/lifestyle** - Update lifestyle information
+- [🔗] **PUT /users/constraints** - Update training constraints
 
 ### Equipment & Gym Database Management
-- [✅] **GET /equipment-categories** - Get all equipment types with movement patterns
-- [✅] **GET /equipment-categories/{id}** - Get specific equipment details
-- [✅] **GET /gyms/search** - Search gyms by location/name
-- [✅] **GET /gyms/{id}** - Get specific gym details and equipment
-- [✅] **POST /gyms** - Create new gym entry (user-contributed)
-- [✅] **PUT /gyms/{id}/equipment** - Update gym equipment availability
-- [✅] **GET /gyms/{id}/users** - Get user community at gym (privacy-respecting)
+- [🏗️] **GET /equipment-categories** - Get all equipment types with movement patterns (Equipment function exists)
+- [🏗️] **GET /equipment-categories/{id}** - Get specific equipment details (Equipment function exists)
+- [ ] **GET /gyms/search** - Search gyms by location/name
+- [ ] **GET /gyms/{id}** - Get specific gym details and equipment
+- [ ] **POST /gyms** - Create new gym entry (user-contributed)
+- [ ] **PUT /gyms/{id}/equipment** - Update gym equipment availability
+- [ ] **GET /gyms/{id}/users** - Get user community at gym (privacy-respecting)
 
 ### Program Generation (Event-Driven)
-- [✅] **POST /programs/generate** - Generate program for specific event/timeline
-- [✅] **GET /programs/current** - Get active program overview
-- [✅] **GET /programs/{id}** - Get specific program details
-- [✅] **PUT /programs/{id}/regenerate** - Regenerate program (life changes)
-- [✅] **DELETE /programs/{id}** - Delete program
-- [✅] **POST /programs/{id}/extend** - Extend timeline (event date changed)
-- [✅] **PUT /programs/{id}/context** - Update context (travel, equipment change)
+- [⚙️] **POST /programs/generate** - Generate program for specific event/timeline (AI integration working)
+- [🔗] **GET /programs/current** - Get active program overview
+- [🔗] **GET /programs/{id}** - Get specific program details
+- [⚙️] **PUT /programs/{id}/regenerate** - Regenerate program (life changes)
+- [🔗] **DELETE /programs/{id}** - Delete program
+- [🔗] **POST /programs/{id}/extend** - Extend timeline (event date changed)
+- [🔗] **PUT /programs/{id}/context** - Update context (travel, equipment change)
 
 ### Daily Workout & Adaptations
-- [✅] **GET /workouts/today** - Get today's workout with current context
-- [✅] **GET /workouts/{id}** - Get specific workout details
-- [✅] **POST /workouts/today/deload-options** - Get 1-2 deload options (if eligible)
-- [✅] **PUT /workouts/today/apply-deload** - Apply volume or intensity deload
-- [✅] **GET /workouts/deload-eligibility** - Check if user can deload today
-- [✅] **POST /workouts/{id}/start** - Start workout session
-- [✅] **PUT /workouts/{id}/log** - Log exercise data (sets/reps/RPE)
-- [✅] **POST /workouts/{id}/complete** - Complete workout
-- [✅] **PUT /workouts/{id}/modify** - Manual workout modification
-- [✅] **POST /workouts/travel-mode** - Toggle travel mode (bodyweight/hotel gym)
-- [✅] **GET /workouts/upcoming** - Preview next 7 days
+- [🔗] **GET /workouts/today** - Get today's workout with current context
+- [🔗] **GET /workouts/{id}** - Get specific workout details
+- [🔗] **POST /workouts/today/deload-options** - Get 1-2 deload options (if eligible)
+- [🔗] **PUT /workouts/today/apply-deload** - Apply volume or intensity deload
+- [🔗] **GET /workouts/deload-eligibility** - Check if user can deload today
+- [🔗] **POST /workouts/{id}/start** - Start workout session
+- [🔗] **PUT /workouts/{id}/log** - Log exercise data (sets/reps/RPE)
+- [🔗] **POST /workouts/{id}/complete** - Complete workout
+- [🔗] **PUT /workouts/{id}/modify** - Manual workout modification
+- [🔗] **POST /workouts/travel-mode** - Toggle travel mode (bodyweight/hotel gym)
+- [🔗] **GET /workouts/upcoming** - Preview next 7 days
 
 ### Context-Aware Exercise Selection
-- [✅] **GET /exercises/available** - Get exercises for current user context
-- [✅] **GET /exercises/{id}** - Get specific exercise details
-- [✅] **GET /exercises/substitutes/{id}** - Get alternatives for current context
-- [✅] **POST /exercises/filter** - Filter exercises by equipment/constraints/preferences
-- [✅] **GET /exercises/categories** - Get exercise categories available to user
-- [✅] **GET /exercises/movement-patterns** - Get exercises by movement pattern
+- [🔗] **GET /exercises/available** - Get exercises for current user context
+- [🔗] **GET /exercises/{id}** - Get specific exercise details
+- [🔗] **GET /exercises/substitutes/{id}** - Get alternatives for current context
+- [🔗] **POST /exercises/filter** - Filter exercises by equipment/constraints/preferences
+- [🔗] **GET /exercises/categories** - Get exercise categories available to user
+- [🔗] **GET /exercises/movement-patterns** - Get exercises by movement pattern
 
 ### Analytics & Progress (User Priority Hierarchy)
 
 #### Primary: Event Progress Dashboard
-- [✅] **GET /analytics/event-dashboard** - Main landing: event readiness, timeline, overall progress
-- [✅] **GET /analytics/event-readiness** - Readiness score breakdown by training system
-- [✅] **GET /analytics/phase-completion** - Current phase progress, upcoming milestones
+- [🔗] **GET /analytics/event-dashboard** - Main landing: event readiness, timeline, overall progress
+- [🔗] **GET /analytics/event-readiness** - Readiness score breakdown by training system
+- [🔗] **GET /analytics/phase-completion** - Current phase progress, upcoming milestones
 
 #### Secondary: Training System Performance  
-- [✅] **GET /analytics/strength-systems** - Overall strength progression, stalling detection
-- [✅] **GET /analytics/power-speed-systems** - Power/speed development across energy systems
-- [✅] **GET /analytics/endurance-systems** - Cardiovascular fitness, energy system development
-- [✅] **GET /analytics/recovery-readiness** - Recovery patterns, training adaptation
+- [🔗] **GET /analytics/strength-systems** - Overall strength progression, stalling detection
+- [🔗] **GET /analytics/power-speed-systems** - Power/speed development across energy systems
+- [🔗] **GET /analytics/endurance-systems** - Cardiovascular fitness, energy system development
+- [🔗] **GET /analytics/recovery-readiness** - Recovery patterns, training adaptation
 
 #### Tertiary: Exercise-Specific Drill-Down
-- [✅] **GET /analytics/strength-exercise/{exercise_id}** - Specific lift progression (bench, squat, etc.)
-- [✅] **GET /analytics/energy-system-exercise/{exercise_id}** - Specific energy system work progressions
-- [✅] **POST /analytics/performance-test** - Log performance test results
-- [✅] **GET /analytics/heart-rate-trends/{exercise_id}** - HR at prescribed intensities over time
+- [🔗] **GET /analytics/strength-exercise/{exercise_id}** - Specific lift progression (bench, squat, etc.)
+- [🔗] **GET /analytics/energy-system-exercise/{exercise_id}** - Specific energy system work progressions
+- [🔗] **POST /analytics/performance-test** - Log performance test results
+- [🔗] **GET /analytics/heart-rate-trends/{exercise_id}** - HR at prescribed intensities over time
 
 #### Supporting Analytics
-- [✅] **GET /analytics/training-load** - RPE trends, volume/intensity balance
-- [✅] **GET /analytics/adherence** - Training consistency, missed sessions analysis
+- [🔗] **GET /analytics/training-load** - RPE trends, volume/intensity balance
+- [🔗] **GET /analytics/adherence** - Training consistency, missed sessions analysis
 
 ---
 
@@ -1628,9 +1649,9 @@ All list endpoints support:
 
 ---
 
-## ✅ Enhanced Completion Criteria
+## 📑 ACTUAL Completion Status
 
-Before moving to implementation:
+### Design Phase (Documentation):
 - [✅] All new profiling endpoints defined with clear purposes
 - [✅] Enhanced user model with detailed JSONB schemas
 - [✅] Equipment and gym management endpoints specified
@@ -1644,6 +1665,13 @@ Before moving to implementation:
 - [✅] Analytics Response Models (Event/System/Exercise-specific) merged from v1
 - [✅] Comprehensive error response specifications merged from v1
 - [✅] API pagination and filtering documentation merged from v1
+
+### Implementation Phase (Code):
+- [⚙️] User profile endpoints have basic logic
+- [🔗] Most endpoints have routing only
+- [ ] Comprehensive testing not done
+- [ ] End-to-end validation not done
+- [ ] Production readiness not verified
 
 **Key API Features Enhanced for v2:**
 - Detailed movement competency assessment beyond simple experience levels

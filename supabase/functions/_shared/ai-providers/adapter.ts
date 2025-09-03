@@ -6,9 +6,10 @@ import { UserProfile, TargetEvent, Program, Workout } from '../types/api.ts';
 export interface AIProvider {
   /**
    * Generate a complete periodized training program based on user profile and target event
-   * Uses reverse periodization from event date
+   * Uses reverse periodization from event date with S&C guardrails embedded
    */
   generateProgram(
+    systemContext: string,
     userProfile: UserProfile, 
     targetEvent: TargetEvent,
     context?: ProgramGenerationContext
@@ -161,12 +162,12 @@ class FallbackProvider implements AIProvider {
     private fallback: AIProvider
   ) {}
 
-  async generateProgram(userProfile: UserProfile, targetEvent: TargetEvent, context?: ProgramGenerationContext): Promise<Program> {
+  async generateProgram(systemContext: string, userProfile: UserProfile, targetEvent: TargetEvent, context?: ProgramGenerationContext): Promise<Program> {
     try {
-      return await this.primary.generateProgram(userProfile, targetEvent, context);
+      return await this.primary.generateProgram(systemContext, userProfile, targetEvent, context);
     } catch (error) {
       console.warn('Primary AI provider failed, trying fallback:', error);
-      return await this.fallback.generateProgram(userProfile, targetEvent, context);
+      return await this.fallback.generateProgram(systemContext, userProfile, targetEvent, context);
     }
   }
 

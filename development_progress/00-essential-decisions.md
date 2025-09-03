@@ -113,6 +113,29 @@
   - Rationale: "Moving target" program that adapts to user behavior
   - Implementation: Background jobs, timeline recalculation algorithms
 
+- [✅] **Program Generation Architecture**: **Structured Edge Functions with S&C Knowledge Base Integration**
+  - Embed S&C principles (Supertraining, Joel Jamieson's periodization methods) as structured prompt templates
+  - User constraints fetched from database and passed as context guardrails to AI providers
+  - Direct Edge Function implementation vs external workflow tools (n8n)
+  - Rationale: Better performance, tighter integration, easier maintenance, sub-30s generation time
+  - Implementation: Template library with S&C principles, user profile integration, AI provider adapters
+
+- [✅] **Training Age Classification & Guardrail System**: **NSCA Research-Based 5-Factor Model with Progressive Learning**
+  - **Classification Factors**: Current training streak, detraining periods, technical proficiency, strength validation, consistency patterns
+  - **Effective vs Chronological Age**: Accounts for inconsistent training, detraining effects, muscle memory research
+  - **Blueprint Selection**: Beginner (<15 effective months), Intermediate (15-30), Advanced (30+ effective months)
+  - **AI Context Injection**: System message with S&C blueprint + user constraints embedded in every AI call
+  - **Research Foundation**: NSCA training status classification, detraining studies, strength retention research
+  - **Implementation**: TrainingAgeService, ProgramContextService, updated AI provider interfaces with systemContext parameter
+
+- [✅] **Training Age Progression Tracking**: **Time-Based Experience Accumulation with Simple Performance Feedback**
+  - **Time-Based Progression**: User reports initial experience (e.g., 7 months) + app usage time = total effective months
+  - **Threshold-Based Classification**: <15 months = beginner, 15-30 = intermediate, 30+ = advanced (applies to NEXT program only)
+  - **Simple Performance Tracking**: Basic metrics like target achievement rate, workout postponement frequency
+  - **Modal Feedback System**: Simple notifications about performance patterns ("You've hit 9/10 target weights this week!")
+  - **No Complex Analysis**: No behavioral signals, exercise selection analysis, or misclassification detection
+  - **Implementation**: TrainingAgeService for time tracking, simple PerformanceTrackingService for basic feedback
+
 ### User Experience Architecture Decisions
 **Why needed now**: Affects navigation structure, API design, and state management
 
@@ -215,8 +238,10 @@
 - **Movement Competency Assessment**: 8 movement patterns with detailed tracking
 - **Physical Profile Management**: Injury tracking, exercise exclusions, limitations management
 - **Profile Completion System**: Progressive onboarding with percentage tracking
+- **Training Age Progression Tracking**: Time-based experience accumulation implemented
 
 ### ⏳ **Partially Implemented / Planned Next**
+- **Simple Performance Tracking Service**: Basic metrics and modal feedback system (TBD)
 - **Gym Ecosystem Management**: Database schema complete, API endpoints planned
 - **Equipment & Gym Database**: Basic structure implemented, full management APIs pending  
 - **Program Generation**: AI providers ready, program generation logic pending

@@ -19,6 +19,12 @@ The first S&C app that generates complete **periodized training programs** (not 
 - Considers energy systems training alongside resistance work
 - Built on swappable AI providers (OpenAI/Anthropic/Ollama)
 
+### 📊 Simple Performance Tracking
+- **No Missed Days**: Skipped workouts automatically shift to next available day
+- **Basic Performance Feedback**: Modal notifications about workout patterns and target achievement
+- **Smart Scheduling**: Programs adapt to your actual schedule, not forcing unrealistic consistency
+- **Progress Evaluation**: Simple metrics like target weight achievement and workout postponement frequency
+
 ### 🔬 Evidence-Based Programming
 Programs generated from principles in:
 - Supertraining (Siff & Verkhoshansky)
