@@ -34,6 +34,7 @@ Set up the React Native Expo project with proper architecture, state management,
 - ✅ **Create reusable styled components and theme structure** - `/constants/theme.ts` exists
 - ✅ **Dark theme with Supabase-inspired neon accents** - Implemented in theme
 - ✅ **Custom NeonButton component with glow effects** - `/components/ui/NeonButton.tsx` exists
+- ✅ **Reusable Modal Pattern** - `/components/OnboardingModal.tsx` serves as template
 
 ### ✅ State Management
 - ✅ **Choose state management solution** - Zustand + TanStack Query chosen
@@ -59,6 +60,42 @@ Set up the React Native Expo project with proper architecture, state management,
 - ⚙️ **Set up debugging tools (Flipper, React DevTools)** - Partial setup
 - ✅ **Configure testing framework** - Jest configured
 - 🔧 **Unit test suite** - 73 tests exist, 2 suites failing
+
+---
+
+## 🎨 Reusable UI Patterns
+
+### Modal Component Pattern
+**Location**: `/src/components/OnboardingModal.tsx`
+
+The OnboardingModal provides a reusable modal pattern with:
+- **Dark overlay background** with blur effect
+- **Neon border glow** using Supabase-inspired colors
+- **Centered card layout** with responsive width
+- **Primary/Secondary action buttons**
+- **Smooth fade animation**
+
+**Key Features**:
+```typescript
+// Modal with neon glow effect
+backgroundColor: theme.colors.surface
+borderColor: theme.colors.primary[400]
+...theme.shadows.neon.primary
+```
+
+**Use Cases**:
+- Onboarding prompts
+- Performance feedback notifications
+- Confirmation dialogs
+- Achievement celebrations
+- Error/warning messages
+- Program completion notices
+
+**To Reuse**:
+1. Copy OnboardingModal as template
+2. Replace content and button handlers
+3. Keep styling consistent with theme
+4. Use same animation patterns
 
 ---
 

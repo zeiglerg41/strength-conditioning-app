@@ -21,6 +21,64 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 ---
 
+## 🗄️ Database Access Instructions
+
+### Remote Supabase Database
+**Project URL**: https://gytncjaerwktkdskkhsr.supabase.co
+**Connection Details**: Stored in `.env` file
+
+### How to Query the Database
+
+#### Method 1: Via Supabase Dashboard
+1. Go to https://supabase.com/dashboard/project/gytncjaerwktkdskkhsr
+2. Navigate to Table Editor or SQL Editor
+3. Run queries directly in browser
+
+#### Method 2: Via Edge Functions (Recommended)
+```javascript
+// In any Edge Function
+const { data, error } = await supabase
+  .from('users')
+  .select('*')
+  .eq('id', userId)
+  .single();
+```
+
+#### Method 3: Via Node.js Script
+```javascript
+// Example: test-supabase-connection.js
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
+
+const supabase = createClient(
+  process.env.EXPO_PUBLIC_SUPABASE_URL,
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY
+);
+
+// Query example
+const { data, error } = await supabase
+  .from('users')
+  .select('*');
+```
+
+#### Method 4: Direct SQL Connection (Admin Only)
+- Connection string available in Supabase dashboard
+- Use with psql, TablePlus, or other PostgreSQL clients
+- Requires service role key for full access
+
+### Testing Edge Functions
+```bash
+# Deploy function
+supabase functions deploy [function-name] --no-verify-jwt
+
+# Test with curl
+curl -X GET "https://gytncjaerwktkdskkhsr.supabase.co/functions/v1/[function-name]/[endpoint]" \
+  -H "apikey: [anon-key]" \
+  -H "Authorization: Bearer [user-token]"
+```
+
+---
+
 ## 📚 Table of Contents - Development Documents
 
 ### [00-essential-decisions.md](./00-essential-decisions.md) ✅ **[COMPLETE]**
@@ -221,6 +279,7 @@ Ensure quality and deploy to production.
 3. **Sequential Progress**: Complete each phase before moving forward
 4. **Documentation-Driven**: Write specs before code
 5. **Test Early**: Validate APIs before frontend work
+6. **Type Safety**: Always ensure TypeScript types are correctly defined before using them - undefined properties will cause runtime errors
 
 ---
 

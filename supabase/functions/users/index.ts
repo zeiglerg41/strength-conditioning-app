@@ -11,7 +11,7 @@ import { createErrorResponse, createSuccessResponse, ValidationError, NotFoundEr
 import { validateRequired, validateEmail } from '../_shared/utils/validation.ts'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const VALID_MOVEMENT_PATTERNS = [
   'squat_pattern', 'deadlift_pattern', 'overhead_press', 'bench_press', 
@@ -28,28 +28,34 @@ serve(async (req: Request) => {
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { persistSession: false },
-      global: {
-        headers: { Authorization: req.headers.get('Authorization')! },
-      },
-    })
-
+    // Create Supabase client with service role key to bypass RLS
+    const supabase = createClient(supabaseUrl, supabaseServiceKey)
+    
+    // Get JWT from Authorization header
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '')
+    
+    if (!token) {
+      return new Response(
+        JSON.stringify({ error: 'No authorization token provided' }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    // Verify the JWT and get user
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token', details: authError?.message }), 
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+    
+    const userId = user.id
     const userService = new UserProfileService(supabase)
     const url = new URL(req.url)
     const method = req.method
     const pathSegments = url.pathname.split('/').filter(Boolean)
-    
-    // Extract user ID from auth
-    const { data: { user } } = await supabase.auth.getUser()
-    const userId = user?.id
-    
-    if (!userId) {
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }), 
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
 
     // Enhanced routing for consolidated endpoints
     const route = pathSegments.slice(1).join('/') // Remove 'users' prefix
@@ -146,17 +152,27 @@ async function handleProfileEndpoints(service: UserProfileService, userId: strin
       
     case 'PUT':
       if (route === 'profile') {
-        const updateRequest: ProfileUpdateRequest = await req.json()
-        if (!updateRequest.section || !updateRequest.data) {
+        try {
+          const updateRequest: ProfileUpdateRequest = await req.json()
+          console.log('PUT /profile request:', JSON.stringify(updateRequest))
+          
+          if (!updateRequest.section || !updateRequest.data) {
+            return new Response(
+              JSON.stringify({ error: 'Section and data required for profile update' }), 
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            )
+          }
+          const updatedProfile = await service.updateProfileSection(userId, updateRequest)
+          return new Response(JSON.stringify(updatedProfile), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          })
+        } catch (error) {
+          console.error('Error in PUT /profile:', error)
           return new Response(
-            JSON.stringify({ error: 'Section and data required for profile update' }), 
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            JSON.stringify({ error: 'Internal server error', details: error.message }), 
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           )
         }
-        const updatedProfile = await service.updateProfileSection(userId, updateRequest)
-        return new Response(JSON.stringify(updatedProfile), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
       }
       if (route === 'profile/step') {
         const { step } = await req.json()
@@ -430,7 +446,7 @@ async function handlePhysicalProfile(service: UserProfileService, userId: string
         )
       }
       
-      const physicalProfile = profile.physical_profile || {
+      const physicalProfile = profile.constraints || {
         current_limitations: [],
         absolute_exercise_exclusions: [],
         movement_modifications: [],
@@ -438,7 +454,7 @@ async function handlePhysicalProfile(service: UserProfileService, userId: string
       }
       
       return new Response(JSON.stringify({
-        physical_profile: physicalProfile,
+        constraints: physicalProfile,
         assessment_summary: {
           current_limitations_count: physicalProfile.current_limitations?.length || 0,
           exercise_exclusions_count: physicalProfile.absolute_exercise_exclusions?.length || 0,
@@ -459,12 +475,12 @@ async function handlePhysicalProfile(service: UserProfileService, userId: string
       // Basic validation would go here (omitted for brevity)
       
       const updatedProfile = await service.updateProfileSection(userId, {
-        section: 'physical_profile',
+        section: 'constraints',
         data: physicalProfileUpdate
       })
       
       return new Response(JSON.stringify({
-        physical_profile: updatedProfile.physical_profile,
+        constraints: updatedProfile.constraints,
         updated_completion_percentage: updatedProfile.profile_completion_percentage,
         message: 'Physical profile updated successfully'
       }), {
@@ -490,7 +506,7 @@ async function handleExerciseExclusions(service: UserProfileService, userId: str
   
   switch (method) {
     case 'GET':
-      const exclusions = profile.physical_profile?.absolute_exercise_exclusions || []
+      const exclusions = profile.constraints?.absolute_exercise_exclusions || []
       const indexedExclusions = exclusions.map((exclusion, index) => ({ id: index, ...exclusion }))
       
       return new Response(JSON.stringify({
@@ -506,7 +522,7 @@ async function handleExerciseExclusions(service: UserProfileService, userId: str
       const updatedExclusions = [...currentExclusions, newExclusion]
       
       const updatedProfile = await service.updateProfileSection(userId, {
-        section: 'physical_profile',
+        section: 'constraints',
         data: {
           ...profile.physical_profile,
           absolute_exercise_exclusions: updatedExclusions
@@ -532,7 +548,7 @@ async function handleExerciseExclusions(service: UserProfileService, userId: str
           updatedExclusions[exclusionId] = exclusionUpdate
           
           await service.updateProfileSection(userId, {
-            section: 'physical_profile',
+            section: 'constraints',
             data: {
               ...profile.physical_profile,
               absolute_exercise_exclusions: updatedExclusions
@@ -559,7 +575,7 @@ async function handleExerciseExclusions(service: UserProfileService, userId: str
           const updatedExclusions = currentExclusions.filter((_, index) => index !== exclusionId)
           
           await service.updateProfileSection(userId, {
-            section: 'physical_profile',
+            section: 'constraints',
             data: {
               ...profile.physical_profile,
               absolute_exercise_exclusions: updatedExclusions
@@ -617,7 +633,7 @@ async function handleInjuries(service: UserProfileService, userId: string, metho
         const updatedLimitations = [...currentLimitations, requestData.limitation]
         
         await service.updateProfileSection(userId, {
-          section: 'physical_profile',
+          section: 'constraints',
           data: {
             ...profile.physical_profile,
             current_limitations: updatedLimitations
@@ -637,7 +653,7 @@ async function handleInjuries(service: UserProfileService, userId: string, metho
         const updatedHistory = [...injuryHistory, requestData.injury]
         
         await service.updateProfileSection(userId, {
-          section: 'physical_profile',
+          section: 'constraints',
           data: {
             ...profile.physical_profile,
             injury_history: updatedHistory

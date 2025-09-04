@@ -1,19 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-import { MainTabParamList } from '../types';
+import { MainTabParamList, RootStackParamList } from '../types';
 import DashboardScreen from '../screens/DashboardScreen';
 import ProgramsScreen from '../screens/program/ProgramsScreen';
 import WorkoutsScreen from '../screens/workout/WorkoutsScreen';
 import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import OnboardingModal from '../components/OnboardingModal';
 import { theme } from '../constants/theme';
+import { useAuthStore } from '../store/authStore';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainNavigator() {
+  const { needsOnboarding } = useAuthStore();
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  
+  useEffect(() => {
+    // Show modal after a short delay if user needs onboarding
+    if (needsOnboarding) {
+      const timer = setTimeout(() => {
+        setShowOnboardingModal(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [needsOnboarding]);
+  
+  const handleStartOnboarding = () => {
+    setShowOnboardingModal(false);
+    // Navigate to onboarding screens
+    navigation.navigate('Onboarding');
+  };
+  
+  const handleDismissModal = () => {
+    setShowOnboardingModal(false);
+  };
+  
   return (
+    <>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
@@ -70,5 +99,12 @@ export default function MainNavigator() {
         options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>
+    
+    <OnboardingModal
+      visible={showOnboardingModal}
+      onStartOnboarding={handleStartOnboarding}
+      onDismiss={handleDismissModal}
+    />
+    </>
   );
 }

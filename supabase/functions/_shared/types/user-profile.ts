@@ -4,13 +4,12 @@
 export interface UserProfile {
   id: string;
   email: string;
-  profile: BasicProfile;
-  training_background: TrainingBackground;
-  physical_profile: PhysicalProfile;
-  performance_goals: PerformanceGoals;
-  equipment_access: EquipmentAccess;
-  lifestyle: LifestyleConstraints;
-  constraints: TrainingConstraints;
+  profile: BasicProfile | any; // Using 'any' for now since profile is JSONB
+  training_background: TrainingBackground | any;
+  performance_goals: PerformanceGoals | any;
+  equipment_access: EquipmentAccess | any;
+  lifestyle: LifestyleConstraints | any;
+  constraints: TrainingConstraints | any; // This is what the DB has instead of physical_profile
   profile_completion_status: ProfileCompletionStatus;
   profile_completion_percentage: number;
   onboarding_completed_at?: string;

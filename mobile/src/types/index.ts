@@ -130,6 +130,7 @@ export interface Exercise {
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  Onboarding: undefined;
 };
 
 export type AuthStackParamList = {
@@ -145,6 +146,15 @@ export type MainTabParamList = {
   Workouts: undefined;
   Analytics: undefined;
   Profile: undefined;
+};
+
+export type OnboardingStackParamList = {
+  BasicInfo: undefined;
+  Lifestyle: undefined;
+  TrainingBackground: undefined;
+  Goals: undefined;
+  Equipment: undefined;
+  Review: undefined;
 };
 
 // API Response types

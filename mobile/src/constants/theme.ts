@@ -96,6 +96,7 @@ export const theme = {
     text: '#fafafa', // Light text
     textSecondary: '#a1a1aa', // Muted text
     textMuted: '#71717a', // Very muted text
+    placeholder: '#6b7280', // Placeholder text - visible but clearly not input
     border: '#27272a', // Dark borders
     borderMuted: '#18181b', // Very subtle borders
     overlay: 'rgba(0, 0, 0, 0.8)', // Dark overlay
@@ -173,6 +174,26 @@ export const theme = {
       lineHeight: 16,
       textTransform: 'uppercase' as const,
       letterSpacing: 0.5,
+    },
+    button: {
+      large: {
+        fontSize: 18,
+        fontWeight: '600' as const,
+        lineHeight: 24,
+        letterSpacing: 0.5,
+      },
+      medium: {
+        fontSize: 16,
+        fontWeight: '600' as const,
+        lineHeight: 20,
+        letterSpacing: 0.25,
+      },
+      small: {
+        fontSize: 14,
+        fontWeight: '600' as const,
+        lineHeight: 18,
+        letterSpacing: 0.25,
+      },
     },
   },
   spacing: {

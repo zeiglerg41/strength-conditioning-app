@@ -6,13 +6,14 @@ import { ActivityIndicator, View } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
+import OnboardingNavigator from './OnboardingNavigator';
 import { RootStackParamList } from '../types';
 import { theme } from '../constants/theme';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
-  const { user, loading, checkSession } = useAuthStore();
+  const { user, loading, checkSession, needsOnboarding } = useAuthStore();
 
   useEffect(() => {
     checkSession();
@@ -36,7 +37,10 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user ? (
-          <Stack.Screen name="Main" component={MainNavigator} />
+          <>
+            <Stack.Screen name="Main" component={MainNavigator} />
+            <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+          </>
         ) : (
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}

@@ -17,8 +17,16 @@
 
 ## Backend API Endpoints
 
-### User Management (/users)
-- 🔧 GET /users/profile
+### 🚀 Deployment Status (2025-09-04)
+- ✅ users function DEPLOYED
+- ✅ programs function DEPLOYED  
+- ✅ workouts function DEPLOYED
+- [ ] exercises function NOT deployed
+- [ ] equipment function NOT deployed
+- [ ] analytics function NOT deployed
+
+### User Management (/users) - DEPLOYED ✅
+- ✅ GET /users/profile - **WORKING** (returns auth required)
 - 🔧 PUT /users/profile
 - 🔧 GET /users/profile/completion
 - 🔧 PUT /users/profile/step

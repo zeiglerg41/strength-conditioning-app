@@ -18,7 +18,6 @@ export class UserProfileService {
         email,
         profile,
         training_background,
-        physical_profile,
         performance_goals,
         equipment_access,
         lifestyle,
@@ -32,7 +31,11 @@ export class UserProfileService {
       .eq('id', userId)
       .single()
 
-    if (error) throw error
+    if (error) {
+      // Return null if user not found instead of throwing
+      if (error.code === 'PGRST116') return null
+      throw error
+    }
     return data
   }
 
@@ -48,6 +51,10 @@ export class UserProfileService {
       updated_at: new Date().toISOString()
     }
 
+    console.log('updateProfileSection - userId:', userId)
+    console.log('updateProfileSection - section:', request.section)
+    console.log('updateProfileSection - data:', JSON.stringify(request.data))
+
     const { data, error } = await this.supabase
       .from('users')
       .update(updateData)
@@ -55,10 +62,14 @@ export class UserProfileService {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('Database update error:', error)
+      throw error
+    }
 
-    // Recalculate profile completion after update
-    await this.updateProfileCompletion(userId)
+    // TODO: Fix update_profile_completion RPC function in database
+    // Commented out until database function is fixed
+    // await this.updateProfileCompletion(userId)
 
     return data
   }

@@ -8,6 +8,7 @@ interface AuthState {
   userProfile: UserProfile | null;
   loading: boolean;
   error: string | null;
+  needsOnboarding: boolean;
 
   // Actions
   setUser: (user: User | null) => void;
@@ -15,6 +16,7 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearError: () => void;
+  setNeedsOnboarding: (needs: boolean) => void;
   
   // Auth methods
   signIn: (email: string, password: string) => Promise<void>;
@@ -22,6 +24,7 @@ interface AuthState {
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   checkSession: () => Promise<void>;
+  checkOnboardingStatus: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -30,6 +33,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   userProfile: null,
   loading: true,
   error: null,
+  needsOnboarding: false,
 
   // State setters
   setUser: (user) => set({ user }),
@@ -37,6 +41,23 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
   clearError: () => set({ error: null }),
+  setNeedsOnboarding: (needs) => set({ needsOnboarding: needs }),
+  
+  // Check if user needs onboarding
+  checkOnboardingStatus: () => {
+    const profile = get().userProfile;
+    if (!profile) return true;
+    
+    // Check if basic profile info is complete
+    const hasBasicInfo = profile.profile?.name && 
+                         profile.profile?.age && 
+                         profile.profile?.gender;
+    
+    // Check completion percentage
+    const isComplete = profile.profile_completion_percentage > 0 || hasBasicInfo;
+    
+    return !isComplete;
+  },
 
   // Auth methods
   signIn: async (email: string, password: string) => {
@@ -64,6 +85,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           console.error('Profile fetch error:', profileError);
         } else if (profile) {
           set({ userProfile: profile });
+          
+          // Check if user needs onboarding
+          const needsOnboarding = get().checkOnboardingStatus();
+          set({ needsOnboarding });
         }
       }
     } catch (error) {
@@ -107,6 +132,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           console.warn('Profile creation failed:', profileError);
           // Don't throw error - user is still created in auth
         }
+        
+        // New users always need onboarding
+        set({ needsOnboarding: true });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred during sign up';
@@ -173,9 +201,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           console.error('Profile fetch error:', profileError);
         } else if (profile) {
           set({ userProfile: profile });
+          
+          // Check if user needs onboarding
+          const needsOnboarding = get().checkOnboardingStatus();
+          set({ needsOnboarding });
         }
       } else {
-        set({ user: null, userProfile: null });
+        set({ user: null, userProfile: null, needsOnboarding: false });
       }
     } catch (error) {
       console.error('Session check error:', error);
