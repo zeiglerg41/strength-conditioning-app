@@ -1,4 +1,12 @@
+// Polyfill for crypto.getRandomValues() - MUST be first import
+import 'react-native-get-random-values';
+
 import React from 'react';
+import { LogBox } from 'react-native';
+
+// Suppress VirtualizedList warning from GooglePlacesAutocomplete
+// The component works fine despite the warning
+LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider } from '@rneui/themed';
 import { QueryClientProvider } from '@tanstack/react-query';

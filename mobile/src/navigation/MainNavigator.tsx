@@ -13,23 +13,34 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import OnboardingModal from '../components/OnboardingModal';
 import { theme } from '../constants/theme';
 import { useAuthStore } from '../store/authStore';
+import { useOnboardingStore } from '../store/onboardingStore';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export default function MainNavigator() {
   const { needsOnboarding } = useAuthStore();
+  const { currentStep, isProfileComplete, loadOnboardingProgress, checkProfileCompletion } = useOnboardingStore();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [isReturningUser, setIsReturningUser] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   
   useEffect(() => {
-    // Show modal after a short delay if user needs onboarding
-    if (needsOnboarding) {
-      const timer = setTimeout(() => {
-        setShowOnboardingModal(true);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [needsOnboarding]);
+    // Load onboarding progress when component mounts
+    const checkOnboardingStatus = async () => {
+      await loadOnboardingProgress();
+      const step = checkProfileCompletion();
+      
+      // Show modal if profile is incomplete (step < 7 means not finished)
+      if (step <= 6) {
+        setIsReturningUser(step > 1); // User has started but not finished
+        setTimeout(() => {
+          setShowOnboardingModal(true);
+        }, 500);
+      }
+    };
+    
+    checkOnboardingStatus();
+  }, []);
   
   const handleStartOnboarding = () => {
     setShowOnboardingModal(false);
@@ -104,6 +115,8 @@ export default function MainNavigator() {
       visible={showOnboardingModal}
       onStartOnboarding={handleStartOnboarding}
       onDismiss={handleDismissModal}
+      currentStep={currentStep}
+      isReturning={isReturningUser}
     />
     </>
   );

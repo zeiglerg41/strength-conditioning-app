@@ -5,6 +5,7 @@ import { theme } from '../../constants/theme';
 export default function WorkoutsScreen() {
   return (
     <View style={styles.container}>
+      
       <Text style={styles.title}>Workouts</Text>
       <View style={styles.placeholder}>
         <Text style={styles.placeholderText}>Workout tracking coming soon!</Text>

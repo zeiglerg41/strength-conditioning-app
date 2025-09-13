@@ -21,6 +21,33 @@ Based on 2025 best practices, we follow a **contract-first** development approac
 
 ---
 
+## 📱 React Native Development Rules
+
+### Component Definition Pattern
+**NEVER define components inside other components** - This causes re-renders and keyboard/focus issues
+```typescript
+// ❌ BAD - Component loses focus on every parent re-render
+function ParentScreen() {
+  const ChildInput = () => <TextInput />  // Re-created every render!
+  return <ChildInput />
+}
+
+// ✅ GOOD - Component maintains stable reference
+const ChildInput = (props) => <TextInput {...props} />
+function ParentScreen() {
+  return <ChildInput />
+}
+```
+
+### Key Rules of Thumb
+1. **Define all sub-components at module level** (outside parent components)
+2. **Use TextInput directly** for forms instead of wrapped Input components when focus matters
+3. **Add stable keys** to form components to prevent unmounting
+4. **Avoid inline component definitions** in render methods
+5. **Use React.memo** for expensive components that don't need frequent updates
+
+---
+
 ## 🗄️ Database Access Instructions
 
 ### Remote Supabase Database

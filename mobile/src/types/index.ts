@@ -150,10 +150,10 @@ export type MainTabParamList = {
 
 export type OnboardingStackParamList = {
   BasicInfo: undefined;
-  Lifestyle: undefined;
+  LocationPrivacy: undefined;
+  TrainingLocations: undefined;
   TrainingBackground: undefined;
-  Goals: undefined;
-  Equipment: undefined;
+  ScheduleLifestyle: undefined;
   Review: undefined;
 };
 

@@ -5,7 +5,10 @@ export interface UserProfile {
   id: string;
   email: string;
   profile: BasicProfile | any; // Using 'any' for now since profile is JSONB
+  location_privacy?: any; // New onboarding step 2
+  training_locations?: any; // New onboarding step 3
   training_background: TrainingBackground | any;
+  schedule_lifestyle?: any; // New onboarding step 5
   performance_goals: PerformanceGoals | any;
   equipment_access: EquipmentAccess | any;
   lifestyle: LifestyleConstraints | any;

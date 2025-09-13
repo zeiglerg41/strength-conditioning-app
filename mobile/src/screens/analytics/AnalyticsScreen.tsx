@@ -5,6 +5,7 @@ import { theme } from '../../constants/theme';
 export default function AnalyticsScreen() {
   return (
     <View style={styles.container}>
+      
       <Text style={styles.title}>Analytics</Text>
       <View style={styles.placeholder}>
         <Text style={styles.placeholderText}>Performance analytics coming soon!</Text>

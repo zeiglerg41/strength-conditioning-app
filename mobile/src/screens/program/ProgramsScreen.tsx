@@ -5,6 +5,7 @@ import { theme } from '../../constants/theme';
 export default function ProgramsScreen() {
   return (
     <View style={styles.container}>
+      
       <Text style={styles.title}>Programs</Text>
       <View style={styles.placeholder}>
         <Text style={styles.placeholderText}>Program management coming soon!</Text>
