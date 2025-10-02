@@ -149,12 +149,21 @@ export type MainTabParamList = {
 };
 
 export type OnboardingStackParamList = {
-  BasicInfo: undefined;
-  LocationPrivacy: undefined;
-  TrainingLocations: undefined;
-  TrainingBackground: undefined;
-  ScheduleLifestyle: undefined;
-  Review: undefined;
+  BasicInfo: { editMode?: boolean } | undefined;
+  LocationPrivacy: { editMode?: boolean } | undefined;
+  TrainingLocations: { editMode?: boolean } | undefined;
+  TrainingBackground: { editMode?: boolean } | undefined;
+  ScheduleLifestyle: { editMode?: boolean } | undefined;
+  Review: { editMode?: boolean } | undefined;
+};
+
+export type MainStackParamList = {
+  MainTabs: undefined;
+  OnboardingStack: {
+    screen: keyof OnboardingStackParamList;
+    params?: { editMode?: boolean };
+  } | undefined;
+  Auth: undefined;
 };
 
 // API Response types

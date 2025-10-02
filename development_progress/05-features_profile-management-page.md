@@ -1,28 +1,22 @@
 # Feature 05: Profile Management Page Requirements
 
-This document defines the Profile section of the app where users can view and manage their personal information, training data, and account settings.
+This document defines the Profile section of the app where users can view and manage their personal information and app settings.
 
 ## Purpose
-The Profile page serves as the central hub for users to:
-- View their complete profile information
-- Edit any section of their onboarding data
-- Track their training progress and statistics
+The Profile page allows users to:
+- View and edit their profile information from onboarding
+- Upload and manage profile photo
+- Adjust app settings and preferences
 - Manage account settings
 - Access help and support
 
 ## Layout Structure
 
 ### Header Section
-- Profile photo placeholder (future feature)
+- Profile photo (with upload/edit capability)
 - User name (large, prominent)
-- Member since date
-- Profile completion badge (if 100%) or completion percentage
-
-### Quick Stats Bar
-- Current active program (if any)
-- Total workouts completed
-- Training streak
-- Next scheduled workout
+- Email address
+- Profile completion indicator (badge or percentage)
 
 ## Main Content Sections
 
@@ -66,29 +60,31 @@ The Profile page serves as the central hub for users to:
 - Sleep & recovery factors
 - **Action**: Edit navigates to ScheduleLifestyleScreen
 
-### 6. Training Goals & Events
-**Expandable Card with Edit/Add Button**
-- Current training event (if set)
-- Event date countdown
-- Performance goals
-- Past events/achievements
-- **Action**: Add/Edit navigates to Goals screen (to be built)
+### 6. App Settings
+**Settings Section**
+- **Units**: Toggle between Metric/Imperial
+- **Default Training Time**: Set preferred workout time
+- **Notifications**: Push notification preferences
+- **Privacy**: Location sharing, data collection
+- **Theme**: Dark/Light mode (future)
+- **Language**: App language preference (future)
 
-### 7. Account Settings
-**List of Options**
-- Notification preferences
-- Privacy settings
-- Data export
+### 7. Account Management
+**Account Actions**
+- Change email
+- Change password
+- Export my data
 - Delete account
 - Sign out
 
 ### 8. Help & Support
-**List of Options**
+**Support Links**
 - Contact support
+- Report a bug
 - FAQs
 - Terms of service
 - Privacy policy
-- App version
+- App version & build number
 
 ## Implementation Requirements
 
@@ -112,17 +108,27 @@ The Profile page serves as the central hub for users to:
 
 ### State Management
 ```typescript
-// Profile store structure
-interface ProfileState {
-  profileData: any; // From database
-  isLoading: boolean;
-  error: string | null;
-  expandedSections: Set<string>;
+// Profile settings store structure
+interface ProfileSettingsState {
+  profilePhoto: string | null;
+  appSettings: {
+    units: 'metric' | 'imperial';
+    defaultTrainingTime: string;
+    notifications: {
+      workoutReminders: boolean;
+      programUpdates: boolean;
+      achievements: boolean;
+    };
+    privacy: {
+      shareLocation: boolean;
+      anonymousAnalytics: boolean;
+    };
+  };
 
   // Actions
-  loadProfile: () => Promise<void>;
-  toggleSection: (section: string) => void;
-  refreshProfile: () => Promise<void>;
+  updateProfilePhoto: (uri: string) => Promise<void>;
+  updateAppSetting: (key: string, value: any) => void;
+  exportUserData: () => Promise<void>;
 }
 ```
 
@@ -135,25 +141,22 @@ interface ProfileState {
 
 ### Special Features
 
+#### Profile Photo Management
+- Tap to upload/change photo
+- Options: Take photo, Choose from gallery, Remove photo
+- Crop and resize functionality
+- Default avatar if no photo
+
 #### Profile Completion Indicator
 - Show percentage if < 100%
 - Visual progress bar
 - List missing required fields
 - Prompt to complete profile if incomplete
 
-#### Training Readiness Score (Future)
-Based on:
-- Profile completion
-- Recent workout adherence
-- Recovery factors
-- Injury status
-
-#### Quick Actions
-Floating action buttons or quick access tiles for:
-- Start workout
-- Log progress
-- Update weight
-- Report injury
+#### Settings Sync
+- Settings saved to user preferences in database
+- Sync across devices (future)
+- Apply changes immediately (units conversion, etc.)
 
 ## Success Criteria
 1. ✅ All onboarding data is viewable
@@ -168,11 +171,11 @@ Floating action buttons or quick access tiles for:
 ### Screen Structure
 ```
 ProfileScreen.tsx
-├── ProfileHeader.tsx
-├── ProfileStatsBar.tsx
-├── ProfileSection.tsx (reusable)
-├── ProfileSectionCard.tsx
-└── AccountOptions.tsx
+├── ProfileHeader.tsx (photo, name, email)
+├── ProfileInfoSection.tsx (reusable for each data section)
+├── SettingsSection.tsx (app preferences)
+├── AccountSection.tsx (account management)
+└── SupportSection.tsx (help links)
 ```
 
 ### Required Integrations
@@ -191,24 +194,27 @@ ProfileScreen.tsx
 
 ### P0 - Must Have (MVP)
 - View all profile information
-- Edit personal information
-- Edit training setup
+- Edit all onboarding sections
+- Units preference toggle
 - Sign out functionality
 
 ### P1 - Should Have
-- Edit all sections
+- Profile photo upload
 - Profile completion indicator
-- Basic account settings
+- App settings (notifications, privacy)
 - Help/support links
+- Change email/password
 
 ### P2 - Nice to Have
-- Profile photo
-- Training statistics
-- Achievement badges
 - Data export
+- Theme selection
+- Language selection
+- Advanced privacy controls
 
 ## Notes
-- Profile page should feel like the user's "home base"
-- Easy access to everything without being overwhelming
+- Profile page is for managing user information and app settings
+- Training stats and analytics are in the Analytics section
+- Keep it simple and focused on profile/settings management
 - Progressive disclosure through expandable sections
 - Mobile-first design with thumb-friendly touch targets
+- All profile edits reuse the onboarding screens in "edit mode"
