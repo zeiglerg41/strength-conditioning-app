@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
 import { Input, Button, ButtonGroup } from '@rneui/themed';
 import { StackScreenProps } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { OnboardingStackParamList } from '../../types';
 import { theme } from '../../constants/theme';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { useEditMode } from './editModeHelper';
 
 type Props = StackScreenProps<OnboardingStackParamList, 'BasicInfo'>;
 
-export default function BasicInfoScreen({ navigation }: Props) {
+export default function BasicInfoScreen({ navigation, route }: Props) {
   const { data, updateProfile, setCurrentStep } = useOnboardingStore();
+  const isEditMode = route?.params?.editMode || false;
+  const returnTo = route?.params?.returnTo;
+  const expandedSection = route?.params?.expandedSection;
+  const { handleClose } = useEditMode(isEditMode, navigation, expandedSection, returnTo);
   
   // Initialize with existing data if returning to this screen
   const [name, setName] = useState(data.profile.name || '');
@@ -45,10 +51,23 @@ export default function BasicInfoScreen({ navigation }: Props) {
       : ''
   );
   
-  
+
   const genderButtons = ['Male', 'Female', 'Other'];
   const unitButtons = ['Metric', 'Imperial'];
-  
+
+  // Override navigation header when in edit mode
+  useLayoutEffect(() => {
+    if (isEditMode) {
+      navigation.setOptions({
+        headerLeft: () => (
+          <TouchableOpacity onPress={handleClose} style={{ marginLeft: 16 }}>
+            <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+          </TouchableOpacity>
+        ),
+      });
+    }
+  }, [isEditMode, navigation, handleClose]);
+
   // Handle unit system change
   const handleUnitsChange = (index: number) => {
     if (index === selectedUnitsIndex) return;
@@ -161,10 +180,15 @@ export default function BasicInfoScreen({ navigation }: Props) {
     };
     
     updateProfile(profileData);
-    setCurrentStep(2);
-    
-    // Navigate to next screen
-    navigation.navigate('LocationPrivacy');
+
+    if (isEditMode) {
+      // In edit mode, return to Profile
+      handleClose();
+    } else {
+      // Normal onboarding flow
+      setCurrentStep(2);
+      navigation.navigate('LocationPrivacy');
+    }
   };
   
   return (
@@ -172,14 +196,22 @@ export default function BasicInfoScreen({ navigation }: Props) {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Let's Get Started</Text>
-          <Text style={styles.subtitle}>Tell us a bit about yourself</Text>
-        </View>
+        {isEditMode && (
+          <View style={styles.editHeader}>
+            <Text style={styles.editTitle}>Edit Personal Information</Text>
+          </View>
+        )}
+
+        {!isEditMode && (
+          <View style={styles.header}>
+            <Text style={styles.title}>Let's Get Started</Text>
+            <Text style={styles.subtitle}>Tell us a bit about yourself</Text>
+          </View>
+        )}
         
         <View style={styles.form}>
           <Input
@@ -295,9 +327,9 @@ export default function BasicInfoScreen({ navigation }: Props) {
         </View>
         
         <View style={styles.footer}>
-          <Text style={styles.progress}>Step 1 of 6</Text>
+          {!isEditMode && <Text style={styles.progress}>Step 1 of 6</Text>}
           <Button
-            title="Continue"
+            title={isEditMode ? "Save" : "Continue"}
             onPress={handleNext}
             disabled={!name || !birthday || selectedGenderIndex === undefined}
             buttonStyle={[
@@ -419,5 +451,19 @@ const styles = StyleSheet.create({
   continueButtonText: {
     ...theme.typography.button.large,
     fontWeight: '600',
+  },
+  editHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  editTitle: {
+    ...theme.typography.heading.h3,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
 });

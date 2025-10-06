@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, BackHandler } from 'react-native';
 import { Button, CheckBox } from '@rneui/themed';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -12,12 +12,17 @@ import GymSearchInput from '../../components/GymSearchInput';
 import AddressAutocomplete from '../../components/AddressAutocomplete';
 import UniversalSearchInput from '../../components/UniversalSearchInput';
 import GooglePlacesGymSearch from '../../components/GooglePlacesGymSearch';
+import { useEditMode } from './editModeHelper';
 
 type Props = StackScreenProps<OnboardingStackParamList, 'TrainingLocations'>;
 
-export default function TrainingLocationsScreen({ navigation }: Props) {
+export default function TrainingLocationsScreen({ navigation, route }: Props) {
   const { data, updateTrainingLocations, updateEquipment, setCurrentStep } = useOnboardingStore();
-  
+  const isEditMode = route?.params?.editMode || false;
+  const expandedSection = route?.params?.expandedSection;
+  const returnTo = route?.params?.returnTo;
+  const { handleClose } = useEditMode(isEditMode, navigation, expandedSection, returnTo);
+
   // Available locations (can select multiple)
   const [hasCommercialGym, setHasCommercialGym] = useState(
     data.training_locations?.has_commercial_gym !== false
@@ -165,13 +170,17 @@ export default function TrainingLocationsScreen({ navigation }: Props) {
     // Also update equipment_access for backwards compatibility
     updateEquipment({
       training_location: primaryLoc as any,
-      equipment_available: hasHomeGym ? equipment : 
+      equipment_available: hasHomeGym ? equipment :
                           hasCommercialGym ? ['Full gym equipment'] : [],
       notes: secondary.join(', '),
     });
-    
-    setCurrentStep(4);
-    navigation.navigate('TrainingBackground');
+
+    if (isEditMode) {
+      handleClose();
+    } else {
+      setCurrentStep(4);
+      navigation.navigate('TrainingBackground');
+    }
   };
   
   return (
@@ -180,10 +189,18 @@ export default function TrainingLocationsScreen({ navigation }: Props) {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
       nestedScrollEnabled={true}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Training Locations</Text>
-        <Text style={styles.subtitle}>Select all locations where you train</Text>
-      </View>
+      {isEditMode && (
+        <View style={styles.editHeader}>
+          <Text style={styles.editTitle}>Edit Training Locations</Text>
+        </View>
+      )}
+
+      {!isEditMode && (
+        <View style={styles.header}>
+          <Text style={styles.title}>Training Locations</Text>
+          <Text style={styles.subtitle}>Select all locations where you train</Text>
+        </View>
+      )}
       
       <View style={styles.form}>
         <View style={styles.section}>
@@ -466,9 +483,9 @@ export default function TrainingLocationsScreen({ navigation }: Props) {
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.progress}>Step 3 of 6</Text>
+        {!isEditMode && <Text style={styles.progress}>Step 3 of 6</Text>}
         <Button
-          title="Continue"
+          title={isEditMode ? "Save" : "Continue"}
           onPress={handleNext}
           buttonStyle={styles.continueButton}
           titleStyle={styles.continueButtonText}
@@ -660,5 +677,19 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     textAlign: 'center',
     marginVertical: theme.spacing.xs,
+  },
+  editHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  editTitle: {
+    ...theme.typography.heading.h3,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
 });

@@ -262,19 +262,35 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
           console.log(`✅ Successfully submitted ${sectionData.section}`);
         }
       }
-      
-      // Update auth store to reflect onboarding complete
-      useAuthStore.getState().setNeedsOnboarding(false);
-      
-      // Refresh user profile
+
+      // Mark onboarding as complete in database
+      console.log('Marking onboarding as complete...');
+      const completeResponse = await fetch(`${baseUrl}/functions/v1/users/onboarding/complete`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!completeResponse.ok) {
+        console.error('Failed to mark onboarding complete');
+      } else {
+        console.log('✅ Onboarding marked as complete');
+      }
+
+      // Refresh user profile from database
       const { data: profile } = await supabase
         .from('users')
         .select('*')
         .eq('id', user.id)
         .single();
-        
+
       if (profile) {
         useAuthStore.getState().setUserProfile(profile);
+        // Update needsOnboarding based on refreshed profile
+        const needsOnboarding = useAuthStore.getState().checkOnboardingStatus();
+        useAuthStore.getState().setNeedsOnboarding(needsOnboarding);
       }
       
     } catch (error) {
@@ -317,6 +333,9 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
         const profile = await response.json();
         console.log('✅ Loaded profile from database:', profile);
 
+        // Update authStore with the full profile (including completion percentage)
+        useAuthStore.getState().setUserProfile(profile);
+
         // Load saved data into store
         const savedData: OnboardingData = {
           profile: profile.profile || {},
@@ -330,14 +349,19 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
           constraints: profile.constraints || {},
         };
 
+        // Check if onboarding is actually complete based on database
+        const isComplete = profile.onboarding_completed_at !== null ||
+                          profile.profile_completion_percentage === 100;
+
         // Determine current step based on what's completed
         const step = get().checkProfileCompletion();
         console.log('Current step determined:', step);
+        console.log('Onboarding complete?', isComplete);
 
         set({
           data: savedData,
           currentStep: step,
-          isProfileComplete: step > 6
+          isProfileComplete: isComplete
         });
 
         console.log('✅ Onboarding data loaded successfully');

@@ -47,15 +47,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   checkOnboardingStatus: () => {
     const profile = get().userProfile;
     if (!profile) return true;
-    
-    // Check if basic profile info is complete
-    const hasBasicInfo = profile.profile?.name && 
-                         profile.profile?.age && 
-                         profile.profile?.gender;
-    
-    // Check completion percentage
-    const isComplete = profile.profile_completion_percentage > 0 || hasBasicInfo;
-    
+
+    // Check if onboarding is complete based on database fields
+    const isComplete = profile.onboarding_completed_at !== null ||
+                      profile.profile_completion_percentage === 100;
+
     return !isComplete;
   },
 

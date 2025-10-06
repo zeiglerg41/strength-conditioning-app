@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, BackHandler } from 'react-native';
 import { Button, ButtonGroup, CheckBox } from '@rneui/themed';
 import { StackScreenProps } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
 import { OnboardingStackParamList } from '../../types';
 import { theme } from '../../constants/theme';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { useEditMode } from './editModeHelper';
 
 type Props = StackScreenProps<OnboardingStackParamList, 'ScheduleLifestyle'>;
 
-export default function ScheduleLifestyleScreen({ navigation }: Props) {
+export default function ScheduleLifestyleScreen({ navigation, route }: Props) {
   const { data, updateScheduleLifestyle, setCurrentStep } = useOnboardingStore();
+  const isEditMode = route?.params?.editMode || false;
+  const expandedSection = route?.params?.expandedSection;
+  const returnTo = route?.params?.returnTo;
+  const { handleClose } = useEditMode(isEditMode, navigation, expandedSection, returnTo);
   
   // Sessions per week (2-7)
   const [sessionsPerWeek, setSessionsPerWeek] = useState(() => {
@@ -129,17 +135,29 @@ export default function ScheduleLifestyleScreen({ navigation }: Props) {
     }
 
     updateScheduleLifestyle(scheduleData);
-    
-    setCurrentStep(6);
-    navigation.navigate('Review');
+
+    if (isEditMode) {
+      handleClose();
+    } else {
+      setCurrentStep(6);
+      navigation.navigate('Review');
+    }
   };
   
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Schedule & Lifestyle</Text>
-        <Text style={styles.subtitle}>Help us fit training into your life</Text>
-      </View>
+      {isEditMode && (
+        <View style={styles.editHeader}>
+          <Text style={styles.editTitle}>Edit Schedule & Lifestyle</Text>
+        </View>
+      )}
+
+      {!isEditMode && (
+        <View style={styles.header}>
+          <Text style={styles.title}>Schedule & Lifestyle</Text>
+          <Text style={styles.subtitle}>Help us fit training into your life</Text>
+        </View>
+      )}
       
       <View style={styles.form}>
         <View style={styles.section}>
@@ -355,9 +373,9 @@ export default function ScheduleLifestyleScreen({ navigation }: Props) {
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.progress}>Step 5 of 6</Text>
+        {!isEditMode && <Text style={styles.progress}>Step 5 of 6</Text>}
         <Button
-          title="Continue to Review"
+          title={isEditMode ? "Save" : "Continue to Review"}
           onPress={handleNext}
           buttonStyle={styles.continueButton}
           titleStyle={styles.continueButtonText}
@@ -465,6 +483,20 @@ const styles = StyleSheet.create({
   continueButtonText: {
     ...theme.typography.button.large,
     fontWeight: '600',
+  },
+  editHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  editTitle: {
+    ...theme.typography.heading.h3,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
   detailsContainer: {
     marginTop: theme.spacing.sm,

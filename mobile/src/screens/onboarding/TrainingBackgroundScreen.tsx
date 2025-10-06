@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, BackHandler } from 'react-native';
 import { Button, Input, CheckBox, ButtonGroup } from '@rneui/themed';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { OnboardingStackParamList } from '../../types';
 import { theme } from '../../constants/theme';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { useEditMode } from './editModeHelper';
 
 type Props = StackScreenProps<OnboardingStackParamList, 'TrainingBackground'>;
 
@@ -140,8 +141,12 @@ const InjuryDetailForm = ({
   </View>
 );
 
-export default function TrainingBackgroundScreen({ navigation }: Props) {
+export default function TrainingBackgroundScreen({ navigation, route }: Props) {
   const { data, updateTrainingBackground, setCurrentStep } = useOnboardingStore();
+  const isEditMode = route?.params?.editMode || false;
+  const expandedSection = route?.params?.expandedSection;
+  const returnTo = route?.params?.returnTo;
+  const { handleClose } = useEditMode(isEditMode, navigation, expandedSection, returnTo);
   
   // Training experience classifications for both cardio and strength
   const cardioExperienceOptions = [
@@ -296,19 +301,31 @@ export default function TrainingBackgroundScreen({ navigation }: Props) {
         strengthExperienceOptions[selectedStrengthExp].value
       ),
     });
-    
-    setCurrentStep(5);
-    navigation.navigate('ScheduleLifestyle');
+
+    if (isEditMode) {
+      handleClose();
+    } else {
+      setCurrentStep(5);
+      navigation.navigate('ScheduleLifestyle');
+    }
   };
 
   // Components are now defined outside to prevent re-rendering issues
   // See definitions at top of file
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Training Background</Text>
-        <Text style={styles.subtitle}>Help us understand your experience level</Text>
-      </View>
+      {isEditMode && (
+        <View style={styles.editHeader}>
+          <Text style={styles.editTitle}>Edit Training Background</Text>
+        </View>
+      )}
+
+      {!isEditMode && (
+        <View style={styles.header}>
+          <Text style={styles.title}>Training Background</Text>
+          <Text style={styles.subtitle}>Help us understand your experience level</Text>
+        </View>
+      )}
       
       <View style={styles.form}>
         <View style={styles.section}>
@@ -419,9 +436,9 @@ export default function TrainingBackgroundScreen({ navigation }: Props) {
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.progress}>Step 4 of 6</Text>
+        {!isEditMode && <Text style={styles.progress}>Step 4 of 6</Text>}
         <Button
-          title="Continue"
+          title={isEditMode ? "Save" : "Continue"}
           onPress={handleNext}
           buttonStyle={styles.continueButton}
           titleStyle={styles.continueButtonText}
@@ -622,5 +639,19 @@ const styles = StyleSheet.create({
   continueButtonText: {
     ...theme.typography.button.large,
     fontWeight: '600',
+  },
+  editHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  editTitle: {
+    ...theme.typography.heading.h3,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
 });

@@ -22,32 +22,46 @@ import SettingsSection from './components/SettingsSection';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ route }: any) {
   const navigation = useNavigation<NavigationProp>();
   const { user, userProfile, signOut } = useAuthStore();
   const { data: onboardingData, checkProfileCompletion } = useOnboardingStore();
   const { appSettings, updateAppSetting } = useProfileSettingsStore();
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
-  const profileCompletion = checkProfileCompletion();
-  const completionPercentage = Math.round((profileCompletion / 6) * 100);
+  // Use database completion percentage if available, otherwise calculate from steps
+  const completionPercentage = userProfile?.profile_completion_percentage ??
+    Math.round((checkProfileCompletion() / 6) * 100);
+
+  // Handle returning from edit mode with expanded section
+  useEffect(() => {
+    if (route?.params?.expandedSection) {
+      const newExpanded = new Set<string>();
+      newExpanded.add(route.params.expandedSection);
+      setExpandedSections(newExpanded);
+    }
+  }, [route?.params?.expandedSection]);
 
   const toggleSection = (section: string) => {
-    const newExpanded = new Set(expandedSections);
-    if (newExpanded.has(section)) {
-      newExpanded.delete(section);
-    } else {
+    const newExpanded = new Set<string>();
+    // Accordion behavior: if clicking on an already open section, close it
+    // Otherwise, open only the clicked section (closing all others)
+    if (!expandedSections.has(section)) {
       newExpanded.add(section);
     }
     setExpandedSections(newExpanded);
   };
 
-  const handleEditSection = (screen: any) => {
+  const handleEditSection = (screen: any, expandedSection: string) => {
     // Navigate to the appropriate onboarding screen in edit mode
     navigation.navigate('Onboarding' as any, {
       screen,
       initial: false,
-      params: { editMode: true },
+      params: {
+        editMode: true,
+        returnTo: 'Profile',
+        expandedSection: expandedSection
+      },
     });
   };
 
@@ -111,7 +125,7 @@ export default function ProfileScreen() {
         icon="person-outline"
         expanded={expandedSections.has('personal')}
         onToggle={() => toggleSection('personal')}
-        onEdit={() => handleEditSection('BasicInfo')}
+        onEdit={() => handleEditSection('BasicInfo', 'personal')}
       >
         <View style={styles.infoContent}>
           <InfoRow label="Name" value={onboardingData.profile.name || 'Not set'} />
@@ -128,7 +142,7 @@ export default function ProfileScreen() {
         icon="location-outline"
         expanded={expandedSections.has('location')}
         onToggle={() => toggleSection('location')}
-        onEdit={() => handleEditSection('LocationPrivacy')}
+        onEdit={() => handleEditSection('LocationPrivacy', 'location')}
       >
         <View style={styles.infoContent}>
           <InfoRow
@@ -152,7 +166,7 @@ export default function ProfileScreen() {
         icon="barbell-outline"
         expanded={expandedSections.has('training')}
         onToggle={() => toggleSection('training')}
-        onEdit={() => handleEditSection('TrainingLocations')}
+        onEdit={() => handleEditSection('TrainingLocations', 'training')}
       >
         <View style={styles.infoContent}>
           <InfoRow
@@ -161,8 +175,16 @@ export default function ProfileScreen() {
           />
           <InfoRow
             label="Gym Memberships"
-            value={onboardingData.training_locations?.gym_names?.join(', ') || 'None'}
+            value={onboardingData.training_locations?.gym_names?.length > 0
+              ? onboardingData.training_locations.gym_names
+              : 'None'}
           />
+          {onboardingData.training_locations?.secondary_locations?.length > 0 && (
+            <InfoRow
+              label="Secondary Locations"
+              value={onboardingData.training_locations.secondary_locations}
+            />
+          )}
         </View>
       </ProfileInfoSection>
 
@@ -172,7 +194,7 @@ export default function ProfileScreen() {
         icon="fitness-outline"
         expanded={expandedSections.has('background')}
         onToggle={() => toggleSection('background')}
-        onEdit={() => handleEditSection('TrainingBackground')}
+        onEdit={() => handleEditSection('TrainingBackground', 'background')}
       >
         <View style={styles.infoContent}>
           <InfoRow
@@ -200,13 +222,19 @@ export default function ProfileScreen() {
         icon="calendar-outline"
         expanded={expandedSections.has('schedule')}
         onToggle={() => toggleSection('schedule')}
-        onEdit={() => handleEditSection('ScheduleLifestyle')}
+        onEdit={() => handleEditSection('ScheduleLifestyle', 'schedule')}
       >
         <View style={styles.infoContent}>
           <InfoRow
             label="Sessions/Week"
             value={onboardingData.schedule_lifestyle?.sessions_per_week?.toString() || 'Not set'}
           />
+          {onboardingData.schedule_lifestyle?.preferred_time && (
+            <InfoRow
+              label="Preferred Times"
+              value={onboardingData.schedule_lifestyle.preferred_time.split(',').map(t => t.trim())}
+            />
+          )}
           <InfoRow
             label="Work Schedule"
             value={onboardingData.schedule_lifestyle?.work_schedule?.replace('_', ' ') || 'Not set'}
@@ -215,6 +243,12 @@ export default function ProfileScreen() {
             label="Sleep Quality"
             value={onboardingData.schedule_lifestyle?.sleep_quality || 'Not set'}
           />
+          {onboardingData.schedule_lifestyle?.other_activities?.length > 0 && (
+            <InfoRow
+              label="Other Activities"
+              value={onboardingData.schedule_lifestyle.other_activities}
+            />
+          )}
         </View>
       </ProfileInfoSection>
 
@@ -285,12 +319,29 @@ export default function ProfileScreen() {
   );
 }
 
-const InfoRow = ({ label, value }: { label: string; value: string }) => (
-  <View style={styles.infoRow}>
-    <Text style={styles.infoLabel}>{label}</Text>
-    <Text style={styles.infoValue}>{value}</Text>
-  </View>
-);
+const InfoRow = ({ label, value }: { label: string; value: string | string[] }) => {
+  const isArray = Array.isArray(value);
+
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <View style={styles.infoValueContainer}>
+        {isArray ? (
+          value.map((item, index) => (
+            <View key={index}>
+              {index > 0 && <View style={styles.valueDivider} />}
+              <Text style={[styles.infoValue, index > 0 && styles.infoValueSpaced]}>
+                {item}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <Text style={styles.infoValue}>{value}</Text>
+        )}
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -314,16 +365,35 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: theme.spacing.xs,
+    paddingVertical: theme.spacing.sm,
+    alignItems: 'flex-start',
   },
   infoLabel: {
     ...theme.typography.body.medium,
     color: theme.colors.textSecondary,
+    minWidth: 120,
+    flex: 0,
+    marginRight: theme.spacing.md,
   },
   infoValue: {
     ...theme.typography.body.medium,
     color: theme.colors.text,
     fontWeight: '500',
+    textAlign: 'right',
+  },
+  infoValueContainer: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  infoValueSpaced: {
+    marginTop: 4,
+  },
+  valueDivider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    opacity: 0.3,
+    marginVertical: 4,
+    width: '100%',
   },
   actionButton: {
     flexDirection: 'row',

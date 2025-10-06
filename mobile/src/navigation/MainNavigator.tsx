@@ -23,22 +23,26 @@ export default function MainNavigator() {
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [isReturningUser, setIsReturningUser] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  
+
   useEffect(() => {
     // Load onboarding progress when component mounts
     const checkOnboardingStatus = async () => {
       await loadOnboardingProgress();
-      const step = checkProfileCompletion();
-      
-      // Show modal if profile is incomplete (step < 7 means not finished)
-      if (step <= 6) {
+
+      // Get fresh state after loading
+      const { isProfileComplete: profileComplete } = useOnboardingStore.getState();
+
+      // Only show modal if profile is NOT complete
+      // profileComplete is set based on database onboarding_completed_at or profile_completion_percentage === 100
+      if (!profileComplete) {
+        const step = checkProfileCompletion();
         setIsReturningUser(step > 1); // User has started but not finished
         setTimeout(() => {
           setShowOnboardingModal(true);
         }, 500);
       }
     };
-    
+
     checkOnboardingStatus();
   }, []);
   

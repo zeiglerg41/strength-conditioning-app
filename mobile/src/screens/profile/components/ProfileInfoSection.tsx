@@ -27,21 +27,26 @@ export default function ProfileInfoSection({
           <Ionicons name={icon as any} size={20} color={theme.colors.primary[400]} />
           <Text style={styles.title}>{title}</Text>
         </View>
-        <View style={styles.controls}>
-          {onEdit && expanded && (
-            <TouchableOpacity onPress={onEdit} style={styles.editButton}>
-              <Text style={styles.editText}>Edit</Text>
-            </TouchableOpacity>
-          )}
-          <Ionicons
-            name={expanded ? 'chevron-up' : 'chevron-down'}
-            size={20}
-            color={theme.colors.textSecondary}
-          />
-        </View>
+        <Ionicons
+          name={expanded ? 'chevron-up' : 'chevron-down'}
+          size={20}
+          color={theme.colors.textSecondary}
+        />
       </TouchableOpacity>
 
-      {expanded && <View style={styles.content}>{children}</View>}
+      {expanded && (
+        <View style={styles.content}>
+          {children}
+          {onEdit && (
+            <>
+              <View style={styles.divider} />
+              <TouchableOpacity onPress={onEdit} style={styles.editButton}>
+                <Text style={styles.editText}>Edit</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -73,16 +78,18 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: theme.spacing.sm,
   },
-  controls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
   editButton: {
-    marginRight: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.xs,
+    alignSelf: 'center',
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.sm,
     backgroundColor: theme.colors.primary[400],
     borderRadius: theme.borderRadius.sm,
+    marginVertical: theme.spacing.sm,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginTop: theme.spacing.sm,
   },
   editText: {
     ...theme.typography.body.small,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, BackHandler } from 'react-native';
 import { Button, ButtonGroup } from '@rneui/themed';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,12 +9,16 @@ import { theme } from '../../constants/theme';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import AddressAutocomplete from '../../components/AddressAutocomplete';
 import { initializeGeocoding } from '../../config/geocoding';
+import { useEditMode } from './editModeHelper';
 
 type Props = StackScreenProps<OnboardingStackParamList, 'LocationPrivacy'>;
 
-export default function LocationPrivacyScreen({ navigation }: Props) {
+export default function LocationPrivacyScreen({ navigation, route }: Props) {
   const { data, updateLocationPrivacy, setCurrentStep } = useOnboardingStore();
-  
+  const isEditMode = route?.params?.editMode || false;
+  const expandedSection = route?.params?.expandedSection;
+  const returnTo = route?.params?.returnTo;
+
   // Initialize with saved data
   const [homeLocation, setHomeLocation] = useState(data.location_privacy?.home_location || '');
   const [homePrivacy, setHomePrivacy] = useState(
@@ -35,8 +39,9 @@ export default function LocationPrivacyScreen({ navigation }: Props) {
     if (interest === 'maybe') return 1;
     return 2;
   });
-  
-  
+
+  const { handleClose } = useEditMode(isEditMode, navigation, expandedSection, returnTo);
+
   useEffect(() => {
     // Initialize geocoding service on mount
     initializeGeocoding();
@@ -93,9 +98,13 @@ export default function LocationPrivacyScreen({ navigation }: Props) {
       location_permission: locationPermission,
       would_consider_commute: ['yes', 'maybe', 'no'][commuteInterest] as 'yes' | 'maybe' | 'no',
     });
-    
-    setCurrentStep(3);
-    navigation.navigate('TrainingLocations');
+
+    if (isEditMode) {
+      handleClose();
+    } else {
+      setCurrentStep(3);
+      navigation.navigate('TrainingLocations');
+    }
   };
   
   const InfoBox = ({ text }: { text: string }) => (
@@ -107,12 +116,20 @@ export default function LocationPrivacyScreen({ navigation }: Props) {
   
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Location & Privacy</Text>
-        <Text style={styles.subtitle}>
-          Help us optimize your training around your daily routine
-        </Text>
-      </View>
+      {isEditMode && (
+        <View style={styles.editHeader}>
+          <Text style={styles.editTitle}>Edit Location & Privacy</Text>
+        </View>
+      )}
+
+      {!isEditMode && (
+        <View style={styles.header}>
+          <Text style={styles.title}>Location & Privacy</Text>
+          <Text style={styles.subtitle}>
+            Help us optimize your training around your daily routine
+          </Text>
+        </View>
+      )}
       
       <View style={styles.form}>
         <View style={styles.section}>
@@ -204,9 +221,9 @@ export default function LocationPrivacyScreen({ navigation }: Props) {
       </View>
       
       <View style={styles.footer}>
-        <Text style={styles.progress}>Step 2 of 6</Text>
+        {!isEditMode && <Text style={styles.progress}>Step 2 of 6</Text>}
         <Button
-          title="Continue"
+          title={isEditMode ? "Save" : "Continue"}
           onPress={handleNext}
           buttonStyle={styles.continueButton}
           titleStyle={styles.continueButtonText}
@@ -330,5 +347,19 @@ const styles = StyleSheet.create({
   continueButtonText: {
     ...theme.typography.button.large,
     fontWeight: '600',
+  },
+  editHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+    marginBottom: theme.spacing.lg,
+  },
+  editTitle: {
+    ...theme.typography.heading.h3,
+    color: theme.colors.text,
+    textAlign: 'center',
   },
 });
