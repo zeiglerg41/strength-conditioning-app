@@ -23,6 +23,8 @@ interface AuthState {
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  changeEmail: (newEmail: string) => Promise<{ success: boolean; message: string }>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
   checkSession: () => Promise<void>;
   checkOnboardingStatus: () => boolean;
 }
@@ -162,12 +164,100 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   resetPassword: async (email: string) => {
     try {
       set({ loading: true, error: null });
-      
+
       const { error } = await supabase.auth.resetPasswordForEmail(email);
-      
+
       if (error) throw error;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An error occurred during password reset';
+      set({ error: message });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  changeEmail: async (newEmail: string) => {
+    try {
+      set({ loading: true, error: null });
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(newEmail)) {
+        throw new Error('Please enter a valid email address');
+      }
+
+      const { data, error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
+
+      if (error) throw error;
+
+      // Update local user state
+      if (data.user) {
+        set({ user: data.user });
+      }
+
+      return {
+        success: true,
+        message: 'Confirmation emails sent to both your current and new email addresses. Please check both inboxes to complete the change.'
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to change email';
+      set({ error: message });
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string) => {
+    try {
+      set({ loading: true, error: null });
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !user.email) throw new Error('Not authenticated');
+
+      // Validate password strength
+      if (newPassword.length < 8) {
+        throw new Error('Password must be at least 8 characters long');
+      }
+      if (!/[a-z]/.test(newPassword)) {
+        throw new Error('Password must contain at least one lowercase letter');
+      }
+      if (!/[A-Z]/.test(newPassword)) {
+        throw new Error('Password must contain at least one uppercase letter');
+      }
+      if (!/[0-9]/.test(newPassword)) {
+        throw new Error('Password must contain at least one number');
+      }
+      if (!/[^a-zA-Z0-9]/.test(newPassword)) {
+        throw new Error('Password must contain at least one special character');
+      }
+
+      // Reauthenticate with current password
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword
+      });
+
+      if (reauthError) {
+        throw new Error('Current password is incorrect');
+      }
+
+      // Update to new password
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) throw error;
+
+      return {
+        success: true,
+        message: 'Password updated successfully'
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to change password';
       set({ error: message });
       throw error;
     } finally {

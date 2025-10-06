@@ -19,6 +19,7 @@ import { RootStackParamList } from '../../types';
 import ProfileHeader from './components/ProfileHeader';
 import ProfileInfoSection from './components/ProfileInfoSection';
 import SettingsSection from './components/SettingsSection';
+import AccountManagementSection from './components/AccountManagementSection';
 
 type NavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -260,20 +261,11 @@ export default function ProfileScreen({ route }: any) {
         onToggle={() => toggleSection('settings')}
       />
 
+      {/* Account Management */}
+      <AccountManagementSection />
+
       {/* Account Actions */}
       <View style={styles.section}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="mail-outline" size={20} color={theme.colors.text} />
-          <Text style={styles.actionText}>Change Email</Text>
-          <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="lock-closed-outline" size={20} color={theme.colors.text} />
-          <Text style={styles.actionText}>Change Password</Text>
-          <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.actionButton}>
           <Ionicons name="download-outline" size={20} color={theme.colors.text} />
           <Text style={styles.actionText}>Export My Data</Text>
